@@ -156,7 +156,7 @@ export default function MarketInsights() {
                                 </>
                             ) : (
                                 <>
-                                    <Sparkles className="w-4 h-4 mr-2" /> Generate AI Prediction
+                                    <Sparkles className="w-4 h-4 mr-2" /> Generate Future Prediction
                                 </>
                             )}
                         </Button>

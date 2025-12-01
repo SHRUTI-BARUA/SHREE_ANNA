@@ -47,29 +47,14 @@ export default function MyProducts() {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const queryClient = useQueryClient();
 
-  // Fetch profile ID (same as auth.users.id)
-  const fetchProfileId = async (): Promise<string> => {
-    if (!user?.id) throw new Error("User not logged in");
-
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", user.id)
-      .single();
-
-    if (error || !profile) throw new Error("Profile not found!");
-    return profile.id;
-  };
-
-  // Fetch products
+  // ============= FETCH PRODUCTS ==================
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["my-products", user?.id],
     queryFn: async () => {
-      const profileId = await fetchProfileId();
       const { data, error } = await supabase
         .from("products")
         .select("*")
-        .eq("seller_id", profileId)
+        .eq("seller_id", user!.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -78,34 +63,33 @@ export default function MyProducts() {
     enabled: !!user,
   });
 
-  // Create product
+  // ============= CREATE PRODUCT ==================
   const createProductMutation = useMutation({
     mutationFn: async (data: ProductFormData): Promise<Product> => {
-      const profileId = await fetchProfileId();
-
       const productData: ProductInsert = {
         title: data.title,
         millet_type: data.millet_type,
         product_form: data.product_form,
         description: data.description || null,
-        available_quantity_kg: parseFloat(String(data.available_quantity_kg)) || 0,
-        price_per_kg: parseFloat(String(data.price_per_kg)) || 0,
-        minimum_order_kg: parseFloat(String(data.minimum_order_kg)) || 1,
-        harvest_date: data.harvest_date?.trim() || null,
-        organic_certified: data.organic_certified || false,
-        quality_grade: data.quality_grade || "standard",
-        moisture_content: data.moisture_content ? parseFloat(String(data.moisture_content)) : null,
+        available_quantity_kg: Number(data.available_quantity_kg),
+        price_per_kg: Number(data.price_per_kg),
+        minimum_order_kg: Number(data.minimum_order_kg),
+        harvest_date: data.harvest_date || null,
+        organic_certified: data.organic_certified ?? null,
+        quality_grade: data.quality_grade || null,
+        moisture_content: data.moisture_content
+          ? Number(data.moisture_content)
+          : null,
         location_state: data.location_state,
         location_district: data.location_district,
-        seller_id: profileId,
-        certifications: (data.certifications as Json) || null,
-        images: (data.images as Json) || null,
-        is_active: data.is_active !== undefined ? data.is_active : true,
+        certifications: data.certifications || null,
+        images: data.images || null,
+        seller_id: user!.id, // OPTIONAL (trigger handles this also)
       };
 
       const { data: product, error } = await supabase
         .from("products")
-        .insert([productData])
+        .insert(productData)
         .select()
         .single();
 
@@ -115,53 +99,46 @@ export default function MyProducts() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-products", user?.id] });
       setShowForm(false);
-      setEditingProduct(null);
-      toast({ title: "Success!", description: "Product has been created successfully." });
+      toast({ title: "Success", description: "Product added!" });
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Error creating product",
-        description: error.message || "Failed to create product.",
-        variant: "destructive",
-      });
-    },
+    onError: (err: any) =>
+      toast({ title: "Error", description: err.message, variant: "destructive" }),
   });
 
-  // Update product
+  // ============= UPDATE PRODUCT ==================
   const updateProductMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: ProductFormData }): Promise<Product> => {
-      const profileId = await fetchProfileId();
-
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: ProductFormData;
+    }): Promise<Product> => {
       const productData: ProductUpdate = {
         title: data.title,
         millet_type: data.millet_type,
         product_form: data.product_form,
         description: data.description || null,
-        available_quantity_kg: parseFloat(String(data.available_quantity_kg)) || 0,
-        price_per_kg: parseFloat(String(data.price_per_kg)) || 0,
-        minimum_order_kg: parseFloat(String(data.minimum_order_kg)) || 1,
-        harvest_date: data.harvest_date?.trim() || null,
+        available_quantity_kg: Number(data.available_quantity_kg),
+        price_per_kg: Number(data.price_per_kg),
+        minimum_order_kg: Number(data.minimum_order_kg),
+        harvest_date: data.harvest_date || null,
         organic_certified: data.organic_certified ?? null,
         quality_grade: data.quality_grade || null,
-        moisture_content: data.moisture_content ? parseFloat(String(data.moisture_content)) : null,
+        moisture_content: data.moisture_content
+          ? Number(data.moisture_content)
+          : null,
         location_state: data.location_state,
         location_district: data.location_district,
-        seller_id: profileId,
-        certifications: data.certifications ?? undefined,
-        images: data.images ?? undefined,
-        is_active: data.is_active ?? undefined,
+        certifications: data.certifications || null,
+        images: data.images || null,
       };
-
-      Object.keys(productData).forEach(
-        (key) =>
-          productData[key as keyof ProductUpdate] === undefined &&
-          delete productData[key as keyof ProductUpdate]
-      );
 
       const { data: product, error } = await supabase
         .from("products")
         .update(productData)
         .eq("id", id)
+        .eq("seller_id", user!.id) // RLS fix
         .select()
         .single();
 
@@ -170,48 +147,47 @@ export default function MyProducts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-products", user?.id] });
-      setShowForm(false);
       setEditingProduct(null);
-      toast({ title: "Success!", description: "Product updated successfully." });
+      setShowForm(false);
+      toast({ title: "Updated", description: "Product updated successfully" });
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Error updating product",
-        description: error.message || "Failed to update product.",
-        variant: "destructive",
-      });
-    },
+    onError: (err: any) =>
+      toast({ title: "Error", description: err.message, variant: "destructive" }),
   });
 
-  // Delete product
+  // ============= DELETE PRODUCT ==================
   const deleteProductMutation = useMutation({
-    mutationFn: async (id: string): Promise<boolean> => {
-      const { error } = await supabase.from("products").delete().eq("id", id);
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("products")
+        .delete()
+        .eq("id", id)
+        .eq("seller_id", user!.id);
+
       if (error) throw error;
       return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-products", user?.id] });
+      toast({ title: "Deleted", description: "Product removed" });
     },
   });
 
-  // Handlers
-  const handleSubmit = (productData: ProductFormData) => {
-    if (editingProduct) {
-      updateProductMutation.mutate({ id: editingProduct.id, data: productData });
-    } else {
-      createProductMutation.mutate(productData);
-    }
-  };
-
+  // ============= HANDLERS ==================
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setShowForm(true);
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      deleteProductMutation.mutate(id);
+    deleteProductMutation.mutate(id);
+  };
+
+  const handleSubmit = (formData: ProductFormData) => {
+    if (editingProduct) {
+      updateProductMutation.mutate({ id: editingProduct.id, data: formData });
+    } else {
+      createProductMutation.mutate(formData);
     }
   };
 
@@ -223,6 +199,7 @@ export default function MyProducts() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">My Products</h1>
             <p className="text-gray-600">Manage your millet products</p>
           </div>
+
           <div className="flex gap-2">
             <div className="flex border rounded-md">
               <Button
@@ -242,6 +219,7 @@ export default function MyProducts() {
                 <Table2 className="w-4 h-4 mr-2" /> Table
               </Button>
             </div>
+
             <Button
               onClick={() => {
                 setEditingProduct(null);
@@ -273,8 +251,11 @@ export default function MyProducts() {
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+              <DialogTitle>
+                {editingProduct ? "Edit Product" : "Add New Product"}
+              </DialogTitle>
             </DialogHeader>
+
             <ProductForm
               product={editingProduct}
               onSubmit={handleSubmit}
@@ -282,8 +263,13 @@ export default function MyProducts() {
                 setShowForm(false);
                 setEditingProduct(null);
               }}
-              isSubmitting={createProductMutation.isPending || updateProductMutation.isPending}
-              error={(createProductMutation.error || updateProductMutation.error) as Error | null}
+              isSubmitting={
+                createProductMutation.isPending || updateProductMutation.isPending
+              }
+              error={
+                (createProductMutation.error ||
+                  updateProductMutation.error) as Error | null
+              }
             />
           </DialogContent>
         </Dialog>

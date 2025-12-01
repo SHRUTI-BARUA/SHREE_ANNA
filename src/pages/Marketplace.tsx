@@ -166,9 +166,7 @@ export default function Marketplace() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input placeholder="Search..." className="pl-10 h-12 bg-white" />
             </div>
-            <Button className="bg-brand-purple text-white px-6 h-12">
-              <Sparkles className="w-5 h-5 mr-2" /> AI Smart Matching
-            </Button>
+            
           </div>
         </div>
       </div>
