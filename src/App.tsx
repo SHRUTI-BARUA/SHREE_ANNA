@@ -1,51 +1,158 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AppSidebar } from "./components/AppSidebar";
+import { AppLayout } from "./components/AppLayout";
+import { useAuthStore } from "./stores/authStore";
+// PAGES
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import MyProducts from "./pages/MyProducts";
+import ProductDetails from "./pages/ProductDetails";
+import GovernmentSchemes from "./pages/GovernmentSchemes";
+import BrandingPage from "./pages/Branding";
 import Dashboard from "./pages/Dashboard";
 import Marketplace from "./pages/Marketplace";
-import MyProducts from "./pages/MyProducts";
+import NotFound from "./pages/NotFound";
 import MyOrders from "./pages/MyOrders";
 import Certificates from "./pages/Certificates";
-import Insights from "./pages/Insights";
-import MilletInfo from "./pages/MilletInfo";
 import Traceability from "./pages/Traceability";
-import Branding from "./pages/Branding";
-import Schemes from "./pages/Schemes";
-import NotFound from "./pages/NotFound";
+import MilletInfo from "./pages/MilletInfo";
+import MarketInsights from "./pages/MarketInsights";
+import ProfileManagement from "./pages/ProfileManagement";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/my-products" element={<MyProducts />} />
-              <Route path="/my-orders" element={<MyOrders />} />
-              <Route path="/certificates" element={<Certificates />} />
-              <Route path="/insights" element={<Insights />} />
-              <Route path="/millet-info" element={<MilletInfo />} />
-              <Route path="/traceability" element={<Traceability />} />
-              <Route path="/branding" element={<Branding />} />
-              <Route path="/schemes" element={<Schemes />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  const { initialize } = useAuthStore();
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Public routes - no sidebar */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            {/* Protected routes - with sidebar */}
+            <Route
+              path="/"
+              element={
+                <AppLayout>
+                  <Dashboard />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/branding"
+              element={
+                <AppLayout>
+                  <BrandingPage />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/marketplace"
+              element={
+                <AppLayout>
+                  <Marketplace />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/myorders"
+              element={
+                <AppLayout>
+                  <MyOrders />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/myproducts"
+              element={
+                <AppLayout>
+                  <MyProducts />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/product/:id"
+              element={
+                <AppLayout>
+                  <ProductDetails />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/govt-schemes"
+              element={
+                <AppLayout>
+                  <GovernmentSchemes />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/quality-certificates"
+              element={
+                <AppLayout>
+                  <Certificates />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/traceability"
+              element={
+                <AppLayout>
+                  <Traceability />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/millet-info"
+              element={
+                <AppLayout>
+                  <MilletInfo />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/market-insights"
+              element={
+                <AppLayout>
+                  <MarketInsights />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <AppLayout>
+                  <ProfileManagement />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <AppLayout>
+                  <NotFound />
+                </AppLayout>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
