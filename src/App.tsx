@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import MyProducts from "./pages/MyProducts";
 import ProductDetails from "./pages/ProductDetails";
+import ProfileList from "./components/ProfileList";
 import GovernmentSchemes from "./pages/GovernmentSchemes";
 import BrandingPage from "./pages/Branding";
 import Dashboard from "./pages/Dashboard";
@@ -148,6 +149,15 @@ function App() {
                 </AppLayout>
               }
             />
+            <Route
+              path="/profiles"
+              element={
+                <AppLayout>
+                  <ProfileList />
+                </AppLayout>
+              }
+            />
+
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
