@@ -1,73 +1,41 @@
-# Welcome to your Lovable project
+#Shreanna Connect – Project Overview
 
-## Project info
+Shreanna Connect is a web application built to bring farmers and consumers closer together.
+The idea is simple: many farmers, especially small millet farmers, don’t get fair prices because they depend heavily on middlemen. At the same time, consumers rarely get direct access to genuine, good-quality farm products.
 
-**URL**: https://lovable.dev/projects/fb996006-a6b0-470d-b30a-7ba7eb65ebbe
+Shreanna Connect creates a space where farmers can sell their produce and millet-based value-added products directly to consumers, with the support of FPOs (Farmer Producer Organizations) and SHGs (Self Help Groups). These groups help with verification, quality checks, and logistics so the process stays organized and trustworthy.
 
-## How can I edit this code?
+This platform is being developed as part of our Smart India Hackathon (SIH) project.
 
-There are several ways of editing your application.
 
-**Use Lovable**
+#Why This Project Matters
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/fb996006-a6b0-470d-b30a-7ba7eb65ebbe) and start prompting.
+-Farmers often face issues like:
 
-Changes made via Lovable will be committed automatically to this repo.
+-Not getting fair prices
 
-**Use your preferred IDE**
+-No direct market access
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+-Difficulty promoting their products
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+-Low visibility for millet-based items
 
-Follow these steps:
+At the same time, consumers want fresher, healthier food and want to know where it comes from.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Shreanna Connect tries to solve both sides of the problem.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+#What Shreanna Connect Does
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Our platform works like a simple, farmer-friendly online marketplace. It allows:
 
-**Edit a file directly in GitHub**
+-Farmers to register, upload products, set prices, and track sales
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+-FPOs and SHGs to help organize farmers, support logistics, and make sure product quality stays high
 
-**Use GitHub Codespaces**
+-Consumers to browse and buy directly from verified farmers
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+By removing unnecessary middlemen, the system becomes more transparent and fair for everyone.
 
-## What technologies are used for this project?
 
-This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/fb996006-a6b0-470d-b30a-7ba7eb65ebbe) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
