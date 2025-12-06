@@ -1,62 +1,78 @@
+/* src/index.css */
+/* 1. Import Google Fonts for the "Shree Anna" Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
+    /* SHREE ANNA THEME PALETTE (Converted to HSL) */
+    --shree-rust: 20 70% 44%;
+    --shree-gold: 40 65% 51%;
+    --shree-green: 98 50% 32%;
+    --shree-brown: 14 23% 29%;
+    --shree-cream: 39 33% 98%;
+    --shree-text: 218 23% 23%;
+
+    /* BASE COLORS */
+    --background: var(--shree-cream);
+    --foreground: var(--shree-text);
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
-
+    --card-foreground: var(--shree-text);
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: var(--shree-text);
 
-    --primary: 38 92% 50%;
+    --primary: var(--shree-green);
     --primary-foreground: 0 0% 100%;
+    --secondary: var(--shree-gold);
+    --secondary-foreground: var(--shree-brown);
 
-    --secondary: 160 84% 39%;
-    --secondary-foreground: 0 0% 100%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 218 10% 45%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-
-    --accent: 38 92% 50%;
+    --accent: var(--shree-rust);
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 38 92% 50%;
+    --border: 40 20% 90%;
+    --input: 40 20% 90%;
+    --ring: var(--shree-rust);
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    /* Brand colors */
+    /* Legacy brand colors */
     --brand-orange: 38 92% 50%;
     --brand-green: 160 84% 39%;
     --brand-green-dark: 160 84% 30%;
     --brand-blue: 217 91% 60%;
     --brand-purple: 271 81% 56%;
-    
-    /* Gradients */
-    --gradient-orange-green: linear-gradient(135deg, hsl(38 92% 50%), hsl(160 84% 39%));
-    --gradient-header: linear-gradient(90deg, hsl(38 92% 50%), hsl(160 84% 39%));
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 25%;
-    --sidebar-primary: 38 92% 50%;
+    /* Gradients */
+    --gradient-orange-green: linear-gradient(
+      135deg,
+      hsl(var(--shree-rust)),
+      hsl(var(--shree-green))
+    );
+    --gradient-header: linear-gradient(
+      90deg,
+      hsl(var(--shree-rust)),
+      hsl(var(--shree-green))
+    );
+
+    /* Sidebar */
+    --sidebar-background: var(--shree-cream);
+    --sidebar-foreground: var(--shree-text);
+    --sidebar-primary: var(--shree-green);
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 95%;
-    --sidebar-accent-foreground: 38 92% 50%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 38 92% 50%;
+    --sidebar-accent: 40 20% 94%;
+    --sidebar-accent-foreground: var(--shree-rust);
+    --sidebar-border: 40 20% 90%;
+    --sidebar-ring: var(--shree-rust);
   }
 
   .dark {
@@ -65,13 +81,11 @@ All colors MUST be HSL.
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
 
@@ -87,6 +101,7 @@ All colors MUST be HSL.
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -96,26 +111,66 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
+  /* Global box-sizing only (no global border!) */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
+  /* Body styles (no @apply) */
   body {
-    @apply bg-background text-foreground;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', Lato, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+  }
+
+  /* Headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: hsl(var(--shree-brown));
+    font-family: 'Playfair Display', 'Merriweather', serif;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  /* Small utility fallbacks used in markup */
+  .text-muted-foreground {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .bg-muted {
+    background-color: hsl(var(--muted));
   }
 }
 
+/* Animations */
 @keyframes slide-up {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .animate-slide-up {
@@ -129,10 +184,18 @@ All colors MUST be HSL.
 .animate-bounce {
   animation: bounce 1s infinite;
 }
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.92); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
+
 .animate-fadeIn {
   animation: fadeIn 0.25s ease-out;
 }

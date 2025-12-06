@@ -1,15 +1,22 @@
-// src/components/MilletInfo.jsx
-import React from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wheat, Heart, Leaf, TrendingUp } from "lucide-react";
+import { Wheat } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Recipes from "./Recipes";
-import HealthBenefits from "./HealthBenefits"
+import HealthBenefits from "./HealthBenefits";
 
-import foxtailImg from "../assets/foxtail.jpeg";
-import pearlImg from "../assets/pearl.jpeg";
-import ragiImg from "../assets/ragi.jpeg"
-// ✅ Millet types and recipes data
+// Images
+import foxtailImg from "../assets/foxtail.jpg";
+import pearlImg from "../assets/PearlMillet.jpg";
+import ragiImg from "../assets/ragi.jpeg";
+import jowarImg from "../assets/jowar.jpg";
+import kodoImg from "../assets/kodoMillet.jpg";
+import littleImg from "../assets/LittleMillet.jpg";
+import barnyardImg from "../assets/Barnyard.jpg";
+import prosoImg from "../assets/ProsoMillet.jpg";
+import rawmilletImg from "../assets/rawmillet.jpeg";
+
+// 🟢 Updated millet types with more data
 const milletTypes = [
   {
     name: "Foxtail Millet (Kangni)",
@@ -18,29 +25,99 @@ const milletTypes = [
     nameKannada: "ನವಣೆ",
     nameTelugu: "కొర్రలు",
     image: foxtailImg,
-    benefits: ["Rich in calcium and iron", "Helps control blood sugar", "Good for heart health", "High in dietary fiber"],
-    nutrition: { protein: "12.3g", fiber: "8g", iron: "2.8mg", calcium: "31mg" }
+    benefits: [
+      "Rich in calcium and iron",
+      "Helps control blood sugar",
+      "Good for heart health",
+      "High in dietary fiber",
+    ],
+    nutrition: { protein: "12.3g", fiber: "8g", iron: "2.8mg", calcium: "31mg" },
   },
-  // ... rest of milletTypes here (same as your original full array)
-];
-
-const recipes = [
   {
-    name: "Ragi Mudde",
-    nameHindi: "रागी मुद्दे",
-    nameTamil: "ரகி கூழ்",
-    nameKannada: "ರಾಗಿ ಮುದ್ದೆ",
-    nameTelugu: "రాగి విషయం",
-    millet: "Finger Millet",
-    description: "Traditional Karnataka dish, nutritious ball made from ragi flour",
-    time: "15 mins"
+    name: "Pearl Millet (Bajra)",
+    nameHindi: "बाजरा",
+    nameTamil: "கம்பு",
+    nameKannada: "ಸಜ್ಜೆ",
+    nameTelugu: "సజ్జలు",
+    image: pearlImg,
+    benefits: ["Best for anemia", "Improves digestion", "Boosts energy levels", "Gluten-free"],
+    nutrition: { protein: "10.6g", fiber: "1.2g", iron: "8mg", calcium: "38mg" },
   },
-  // ... rest of recipes here
+  {
+    name: "Finger Millet (Ragi)",
+    nameHindi: "रागी / मड़ुवा",
+    nameTamil: "கேழ்வரகு",
+    nameKannada: "ರಾಗಿ",
+    nameTelugu: "రాగులు",
+    image: ragiImg,
+    benefits: [
+      "Richest source of calcium",
+      "Controls diabetes",
+      "Strengthens bones",
+      "High antioxidants",
+    ],
+    nutrition: { protein: "7.3g", fiber: "3.6g", iron: "3.9mg", calcium: "344mg" },
+  },
+  {
+    name: "Sorghum (Jowar)",
+    nameHindi: "ज्वार",
+    nameTamil: "சோளம்",
+    nameKannada: "ಜೋಳ",
+    nameTelugu: "జోన్నలు",
+    image: jowarImg,
+    benefits: ["Good for weight loss", "Reduces cholesterol", "Improves digestion", "Rich in B vitamins"],
+    nutrition: { protein: "10.4g", fiber: "6.7g", iron: "4.1mg", calcium: "25mg" },
+  },
+  {
+    name: "Kodo Millet (Kodon)",
+    nameHindi: "कोदन",
+    nameTamil: "வரகு",
+    nameKannada: "ಹಾರಕ",
+    nameTelugu: "కొదుమలు",
+    image: kodoImg,
+    benefits: ["Helps in managing obesity", "Anti-inflammatory", "Strengthens nervous system"],
+    nutrition: { protein: "8.3g", fiber: "9g", iron: "0.5mg", calcium: "27mg" },
+  },
+  {
+    name: "Little Millet (Kutki)",
+    nameHindi: "कुटकी",
+    nameTamil: "சாமை",
+    nameKannada: "ಸಾವಿ",
+    nameTelugu: "సామలు",
+    image: littleImg,
+    benefits: ["Controls diabetes", "Good source of B-vitamins", "Supports brain health"],
+    nutrition: { protein: "7.7g", fiber: "7.6g", iron: "9.3mg", calcium: "17mg" },
+  },
+  {
+    name: "Barnyard Millet (Sanwa)",
+    nameHindi: "सावा",
+    nameTamil: "குதிரைவாலி",
+    nameKannada: "ಒಡಲು",
+    nameTelugu: "ఓడలు",
+    image: barnyardImg,
+    benefits: [
+      "Fast energy boost",
+      "Controls thyroid",
+      "Best millet for fasting",
+      "Very low glycemic index",
+    ],
+    nutrition: { protein: "11.2g", fiber: "10g", iron: "18.6mg", calcium: "22mg" },
+  },
+  {
+    name: "Proso Millet (Barri)",
+    nameHindi: "बार्री",
+    nameTamil: "பனிவரகு",
+    nameKannada: "ಅರಕೆ",
+    nameTelugu: "వరగులు",
+    image: prosoImg,
+    benefits: ["Strengthens muscles", "Improves metabolism", "Good for nervous system"],
+    nutrition: { protein: "12.5g", fiber: "2.2g", iron: "0.8mg", calcium: "14mg" },
+  },
 ];
 
 export default function MilletInfo() {
-  const [language, setLanguage] = React.useState(() => {
-    return localStorage.getItem('preferredLanguage') || 'english';
+  const [language, setLanguage] = useState(() => {
+    return localStorage.getItem("preferredLanguage") || "english";
   });
 
   const t = (en, hi, ta, kn, te) => {
@@ -49,49 +126,32 @@ export default function MilletInfo() {
   };
 
   const getMilletName = (millet) => {
-    if (language === 'hindi') return millet.nameHindi;
-    if (language === 'tamil') return millet.nameTamil;
-    if (language === 'kannada') return millet.nameKannada;
-    if (language === 'telugu') return millet.nameTelugu;
+    if (language === "hindi") return millet.nameHindi;
+    if (language === "tamil") return millet.nameTamil;
+    if (language === "kannada") return millet.nameKannada;
+    if (language === "telugu") return millet.nameTelugu;
     return millet.name;
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-green-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="inline-block p-3 bg-gradient-to-r from-amber-500 to-green-600 rounded-full mb-4">
             <Wheat className="w-12 h-12 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            {t("Shree Anna (Millets)", "श्री अन्न (श्री अन्न)", "சிறு தானியங்கள்", "ಶ್ರೀ ಅನ್ನ", "శ్రీ అన్నం")}
+            {t("Shree Anna (Millets)", "श्री अन्न", "சிறுதானியங்கள்", "ಶ್ರೀ ಅನ್ನ", "శ్రీ అన్నం")}
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t(
-              "Millets - Ancient Superfoods for Modern Health. Celebrating the International Year of Millets 2023",
-              "श्री अन्न - आधुनिक स्वास्थ्य के लिए प्राचीन सुपरफूड। अंतर्राष्ट्रीय श्री अन्न वर्ष 2023",
-              "தினைகள் - நவீன சுகாதாரத்திற்கான பண்டைய சூப்பர்ஃபுட்ஸ்",
-              "ಶ್ರೀಧಾನ್ಯಗಳು - ಆಧುನಿಕ ಆರೋಗ್ಯಕ್ಕಾಗಿ ಪುರಾತನ ಸೂಪರ್‌ಫುಡ್ಸ್",
-              "సిరిధాన్యాలు - ఆధునిక ఆరోగ్యం కోసం పురాతన సూపర్‌ఫುడ్‌സ്"
-            )}
-          </p>
         </div>
 
         <Tabs defaultValue="types" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="types">
-              {t("Millet Types", "श्री अन्न प्रकार", "தினை வகைகள்", "ಶ್ರೀಧಾನ್ಯ ಪ್ರಕಾರಗಳು", "సిరిధాన్యాల రకాలు")}
-            </TabsTrigger>
-            <TabsTrigger value="benefits">
-              {t("Health Benefits", "स्वास्थ्य लाभ", "ஆரோக்கிய நன்மைகள்", "ಆರೋಗ್ಯ ಪ್ರಯೋಜನಗಳು", "ఆరోగ్య లాభాలు")}
-            </TabsTrigger>
-            <TabsTrigger value="recipes">
-              {t("Recipes", "व्यंजन", "சமையல் குறிப்புகள்", "ಪಾಕವಿಧಾನಗಳು", "వంటకాలు")}
-            </TabsTrigger>
+            <TabsTrigger value="types">{t("Millet Types", "श्री अन्न प्रकार", "தினை வகைகள்", "ಶ್ರೀಧಾನ್ಯ ಪ್ರಕಾರಗಳು", "రకాలు")}</TabsTrigger>
+            <TabsTrigger value="benefits">{t("Health Benefits", "स्वास्थ्य लाभ", "ஆரோக்கிய நன்மைகள்", "ಆರೋಗ್ಯ ಪ್ರಯೋಜನಗಳು", "ఆరోగ్య లాభాలు")}</TabsTrigger>
+            <TabsTrigger value="recipes">{t("Recipes", "व्यंजन", "சமையல் குறிப்புகள்", "ಪಾಕವಿಧಾನಗಳು", "వంటకాలు")}</TabsTrigger>
           </TabsList>
 
-          {/* Millet Types */}
           <TabsContent value="types">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {milletTypes.map((millet, index) => (
@@ -110,42 +170,16 @@ export default function MilletInfo() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-sm text-gray-700 mb-2">
-                        {t("Benefits:", "लाभ:", "நன்மைகள்:", "ಪ್ರಯೋಜನಗಳು:", "ప్రయోజನೆಗಳು:")}
-                      </h4>
-                      <ul className="space-y-1">
-                        {millet.benefits.map((benefit, i) => (
-                          <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
-                            <span className="text-green-600">✓</span>
-                            <span>{benefit}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="bg-gradient-to-r from-amber-50 to-green-50 p-3 rounded-lg">
-                      <h4 className="font-semibold text-xs text-gray-700 mb-2">
-                        {t("Nutrition (per 100g):", "पोषण (प्रति 100 ग्राम):", "ஊட்டச்சத்து (100 கிராமுக்கு):", "ಪೋಷಣೆ (100 ಗ್ರಾಂಗೆ):", "పోషకాలు (100 గ్రాములకు):")}
-                      </h4>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <span className="text-gray-600">{t("Protein:", "प्रोटीन:", "புரதம்:", "ಪ್ರೋಟೀನ್:", "ప్రోటీన్:")}</span>
-                          <span className="ml-1 font-semibold">{millet.nutrition.protein}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">{t("Fiber:", "फाइबर:", "நார்ச்சத்து:", "ಫೈಬರ್:", "ఫైబర్:")}</span>
-                          <span className="ml-1 font-semibold">{millet.nutrition.fiber}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">{t("Iron:", "आयरन:", "இரும்பு:", "ಕಬ್ಬಿಣ:", "ఇనుము:")}</span>
-                          <span className="ml-1 font-semibold">{millet.nutrition.iron}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">{t("Calcium:", "कैल्शियम:", "கால்சியம்:", "ಕ್ಯಾಲ್ಸಿಯಂ:", "కాల్షియం:")}</span>
-                          <span className="ml-1 font-semibold">{millet.nutrition.calcium}</span>
-                        </div>
-                      </div>
-                    </div>
+                    <h4 className="font-semibold text-sm text-gray-700 mb-2">
+                      {t("Benefits:", "लाभ:", "நன்மைகள்:", "ಪ್ರಯೋಜನಗಳು:", "ప్రయోజనాలు:")}
+                    </h4>
+                    <ul className="space-y-1">
+                      {millet.benefits.map((benefit, i) => (
+                        <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
+                          <span className="text-green-600">✓</span> <span>{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </CardContent>
                 </Card>
               ))}
@@ -156,10 +190,8 @@ export default function MilletInfo() {
             <HealthBenefits milletTypes={milletTypes} language={language} t={t} />
           </TabsContent>
 
-
-          {/* Recipes */}
           <TabsContent value="recipes">
-            <Recipes recipes={recipes} language={language} t={t} />
+            <Recipes recipes={[]} language={language} t={t} />
           </TabsContent>
         </Tabs>
       </div>

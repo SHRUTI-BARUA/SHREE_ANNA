@@ -1,8 +1,16 @@
-import type { Config } from "tailwindcss";
+// tailwind.config.ts
+import type { Config } from "tailwindcss"
+import tailwindAnimate from "tailwindcss-animate"
 
-export default {
+const config: Config = {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./index.html",                    // <– important for Vite
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",      // <– covers App.tsx, main.tsx, etc.
+  ],
   prefix: "",
   theme: {
     container: {
@@ -64,10 +72,23 @@ export default {
           blue: "hsl(var(--brand-blue))",
           purple: "hsl(var(--brand-purple))",
         },
+        shree: {
+          rust: "#C05621",
+          gold: "#D69E2E",
+          green: "#4C7C29",
+          brown: "#5D4037",
+          cream: "#FDFBF7",
+          text: "#2D3748",
+        },
+      },
+      fontFamily: {
+        serif: ['"Playfair Display"', "Merriweather", "serif"],
+        sans: ['"Inter"', "Lato", "sans-serif"],
       },
       backgroundImage: {
         "gradient-orange-green": "var(--gradient-orange-green)",
         "gradient-header": "var(--gradient-header)",
+        "organic-pattern": "url('/branding/subtle-grain.png')",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -76,20 +97,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
@@ -98,5 +111,7 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-} satisfies Config;
+  plugins: [tailwindAnimate],
+}
+
+export default config
