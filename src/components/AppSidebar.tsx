@@ -46,9 +46,10 @@ export function AppSidebar() {
   };
 
   const handleLogout = async () => {
-    await signOut();
-    navigate("/login");
-  };
+  await signOut();
+  navigate("/");        // 👈 go to Landing, not /login
+};
+
 
   const getUserInitial = () => {
     if (user?.email) {

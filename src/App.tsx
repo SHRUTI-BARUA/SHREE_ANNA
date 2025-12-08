@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { useAuthStore } from "./stores/authStore";
+
 // PAGES
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -23,11 +24,14 @@ import Traceability from "./pages/Traceability";
 import MilletInfo from "./pages/MilletInfo";
 import MarketInsights from "./pages/MarketInsights";
 import ProfileManagement from "./pages/ProfileManagement";
+import Landing from "./pages/Landing";
 
 const queryClient = new QueryClient();
 
 function App() {
-  const { initialize } = useAuthStore();
+  // I’m assuming your auth store exposes `user`.
+  // If it’s called `isAuthenticated`, just rename accordingly.
+  const { initialize, user } = useAuthStore();
 
   useEffect(() => {
     initialize();
@@ -40,19 +44,25 @@ function App() {
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Home: Landing when logged OUT, Dashboard when logged IN */}
+            <Route
+              path="/"
+              element={
+                user ? (
+                  <AppLayout>
+                    <Dashboard />
+                  </AppLayout>
+                ) : (
+                  <Landing />
+                )
+              }
+            />
+
             {/* Public routes - no sidebar */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
-            {/* Protected routes - with sidebar */}
-            <Route
-              path="/"
-              element={
-                <AppLayout>
-                  <Dashboard />
-                </AppLayout>
-              }
-            />
+            {/* All the old routes exactly like before */}
             <Route
               path="/branding"
               element={
@@ -142,14 +152,6 @@ function App() {
               }
             />
             <Route
-              path="*"
-              element={
-                <AppLayout>
-                  <NotFound />
-                </AppLayout>
-              }
-            />
-            <Route
               path="/profiles"
               element={
                 <AppLayout>
@@ -158,6 +160,15 @@ function App() {
               }
             />
 
+            {/* 404 */}
+            <Route
+              path="*"
+              element={
+                <AppLayout>
+                  <NotFound />
+                </AppLayout>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

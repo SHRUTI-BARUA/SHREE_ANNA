@@ -1,5 +1,6 @@
+// src/stores/authStore.ts
 import { create } from "zustand";
-import { User, Session, AuthError } from "@supabase/supabase-js";
+import type { User, Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
 interface AuthState {
@@ -7,6 +8,8 @@ interface AuthState {
   session: Session | null;
   loading: boolean;
   initialized: boolean;
+
+  // Email auth
   signIn: (
     email: string,
     password: string
@@ -15,14 +18,22 @@ interface AuthState {
     email: string,
     password: string
   ) => Promise<{ error: AuthError | null }>;
+
+  // Phone OTP auth
+  sendOtp: (phone: string) => Promise<{ error: AuthError | null }>;
+  verifyOtp: (
+    phone: string,
+    token: string
+  ) => Promise<{ error: AuthError | null }>;
+
   signOut: () => Promise<void>;
   initialize: () => Promise<void>;
 }
 
-// Store the auth state change subscription to allow cleanup
-let authStateChangeSubscription: ReturnType<
-  typeof supabase.auth.onAuthStateChange
-> | null = null;
+// Just to avoid registering multiple listeners
+let authStateChangeSubscription:
+  | ReturnType<typeof supabase.auth.onAuthStateChange>
+  | null = null;
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
@@ -30,6 +41,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loading: true,
   initialized: false,
 
+  /* ---------------- EMAIL SIGN-IN ---------------- */
   signIn: async (email: string, password: string) => {
     set({ loading: true });
     try {
@@ -49,12 +61,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       return { error };
-    } catch (error) {
+    } catch (err) {
       set({ loading: false });
-      return { error: error as AuthError };
+      return { error: err as AuthError };
     }
   },
 
+  /* ---------------- EMAIL SIGN-UP ---------------- */
   signUp: async (email: string, password: string) => {
     set({ loading: true });
     try {
@@ -74,12 +87,53 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       return { error };
-    } catch (error) {
+    } catch (err) {
       set({ loading: false });
-      return { error: error as AuthError };
+      return { error: err as AuthError };
     }
   },
 
+  /* ---------------- SEND PHONE OTP ---------------- */
+  sendOtp: async (phone: string) => {
+    set({ loading: true });
+    try {
+      const { error } = await supabase.auth.signInWithOtp({ phone });
+      set({ loading: false });
+      return { error };
+    } catch (err) {
+      set({ loading: false });
+      return { error: err as AuthError };
+    }
+  },
+
+  /* ---------------- VERIFY PHONE OTP ---------------- */
+  verifyOtp: async (phone: string, token: string) => {
+    set({ loading: true });
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone,
+        token,
+        type: "sms",
+      });
+
+      if (data.session) {
+        set({
+          user: data.user!,
+          session: data.session,
+          loading: false,
+        });
+      } else {
+        set({ loading: false });
+      }
+
+      return { error };
+    } catch (err) {
+      set({ loading: false });
+      return { error: err as AuthError };
+    }
+  },
+
+  /* ---------------- SIGN OUT ---------------- */
   signOut: async () => {
     set({ loading: true });
     try {
@@ -87,13 +141,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (error) {
         console.error("Error signing out:", error);
       }
-      set({
-        user: null,
-        session: null,
-        loading: false,
-      });
-    } catch (error) {
-      console.error("Error signing out:", error);
+    } finally {
       set({
         user: null,
         session: null,
@@ -102,16 +150,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
+  /* ---------------- INITIALIZE ---------------- */
   initialize: async () => {
-    // Prevent multiple initializations
-    if (get().initialized) {
-      return;
-    }
+    if (get().initialized) return;
 
     set({ loading: true });
 
     try {
-      // Get initial session
       const {
         data: { session },
         error,
@@ -119,11 +164,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (error) {
         console.error("Error getting session:", error);
-        set({
-          loading: false,
-          initialized: true,
-        });
-        return;
       }
 
       if (session) {
@@ -134,13 +174,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           initialized: true,
         });
       } else {
-        set({
-          loading: false,
-          initialized: true,
-        });
+        set({ loading: false, initialized: true });
       }
 
-      // Set up auth state change listener only once
+      // Listen to auth changes only once
       if (!authStateChangeSubscription) {
         authStateChangeSubscription = supabase.auth.onAuthStateChange(
           (_event, session) => {
@@ -152,12 +189,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           }
         );
       }
-    } catch (error) {
-      console.error("Error initializing auth:", error);
-      set({
-        loading: false,
-        initialized: true,
-      });
+    } catch (err) {
+      console.error("Auth init error:", err);
+      set({ loading: false, initialized: true });
     }
   },
 }));

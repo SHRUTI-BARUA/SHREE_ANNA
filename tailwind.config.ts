@@ -82,8 +82,26 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ['"Playfair Display"', "Merriweather", "serif"],
-        sans: ['"Inter"', "Lato", "sans-serif"],
+        // gov-style simple font everywhere
+        sans: [
+          '"Noto Sans"',
+          '"Noto Sans Devanagari"',
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "sans-serif",
+        ],
+        // if you ever use font-serif, keep it same family for consistency
+        serif: [
+          '"Noto Sans"',
+          '"Noto Sans Devanagari"',
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "sans-serif",
+        ],
       },
       backgroundImage: {
         "gradient-orange-green": "var(--gradient-orange-green)",

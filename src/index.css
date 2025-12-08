@@ -1,6 +1,7 @@
 /* src/index.css */
-/* 1. Import Google Fonts for the "Shree Anna" Theme */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
+/* 1. Import GoI-style fonts: Noto Sans + Devanagari */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -119,17 +120,18 @@
     box-sizing: border-box;
   }
 
-  /* Body styles (no @apply) */
+  /* Body: GoI-style Noto Sans everywhere */
   body {
     background: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: 'Inter', Lato, sans-serif;
+    font-family: 'Noto Sans', 'Noto Sans Devanagari', system-ui, -apple-system,
+      BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     margin: 0;
   }
 
-  /* Headings */
+  /* Headings: same font, just bolder (no Playfair) */
   h1,
   h2,
   h3,
@@ -137,7 +139,8 @@
   h5,
   h6 {
     color: hsl(var(--shree-brown));
-    font-family: 'Playfair Display', 'Merriweather', serif;
+    font-family: 'Noto Sans', 'Noto Sans Devanagari', system-ui, -apple-system,
+      BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-weight: 700;
     margin: 0;
   }
