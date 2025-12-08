@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface Product {
   id: string;
@@ -42,11 +43,12 @@ export default function ProductsTable({
   onDelete,
 }: ProductsTableProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <p className="text-gray-600">Loading products...</p>
+        <p className="text-gray-600">{t("products.table.loading")}</p>
       </div>
     );
   }
@@ -54,27 +56,27 @@ export default function ProductsTable({
   if (!products || products.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
-        <p className="text-gray-600">No products found. Add your first product to get started!</p>
+        <p className="text-gray-600">{t("products.table.empty")}</p>
       </div>
     );
   }
 
   const formatMilletType = (type: string) => {
-    return type
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase());
+    const translated = t(`millets.types.${type}`);
+    if (translated && translated !== `millets.types.${type}`) return translated;
+    return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const formatProductForm = (form: string) => {
-    return form
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase());
+    const translated = t(`millets.forms.${form}`);
+    if (translated && translated !== `millets.forms.${form}`) return translated;
+    return form.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const formatQualityGrade = (grade: string) => {
-    return grade
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (l) => l.toUpperCase());
+    const translated = t(`millets.quality.${grade}`);
+    if (translated && translated !== `millets.quality.${grade}`) return translated;
+    return grade.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const formatDate = (dateString: string) => {
@@ -92,17 +94,17 @@ export default function ProductsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="min-w-[200px]">Product Title</TableHead>
-              <TableHead className="min-w-[120px]">Millet Type</TableHead>
-              <TableHead className="min-w-[100px]">Form</TableHead>
-              <TableHead className="min-w-[100px]">Price/kg (₹)</TableHead>
-              <TableHead className="min-w-[100px]">Available (kg)</TableHead>
-              <TableHead className="min-w-[100px]">Min Order (kg)</TableHead>
-              <TableHead className="min-w-[100px]">Quality</TableHead>
-              <TableHead className="min-w-[150px]">Location</TableHead>
-              <TableHead className="min-w-[100px]">Status</TableHead>
-              <TableHead className="min-w-[100px]">Created</TableHead>
-              <TableHead className="min-w-[180px] text-right">Actions</TableHead>
+              <TableHead className="min-w-[200px]">{t("products.table.columns.title")}</TableHead>
+              <TableHead className="min-w-[120px]">{t("products.table.columns.milletType")}</TableHead>
+              <TableHead className="min-w-[100px]">{t("products.table.columns.form")}</TableHead>
+              <TableHead className="min-w-[100px]">{t("products.table.columns.price")}</TableHead>
+              <TableHead className="min-w-[100px]">{t("products.table.columns.available")}</TableHead>
+              <TableHead className="min-w-[100px]">{t("products.table.columns.minOrder")}</TableHead>
+              <TableHead className="min-w-[100px]">{t("products.table.columns.quality")}</TableHead>
+              <TableHead className="min-w-[150px]">{t("products.table.columns.location")}</TableHead>
+              <TableHead className="min-w-[100px]">{t("products.table.columns.status")}</TableHead>
+              <TableHead className="min-w-[100px]">{t("products.table.columns.created")}</TableHead>
+              <TableHead className="min-w-[180px] text-right">{t("products.table.columns.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -139,11 +141,13 @@ export default function ProductsTable({
                 </TableCell>
                 <TableCell>
                   <Badge variant={product.is_active ? "default" : "secondary"}>
-                    {product.is_active ? "Active" : "Inactive"}
+                    {product.is_active
+                      ? t("products.table.status.active")
+                      : t("products.table.status.inactive")}
                   </Badge>
                   {product.organic_certified && (
                     <Badge variant="outline" className="ml-1">
-                      Organic
+                      {t("products.table.status.organic")}
                     </Badge>
                   )}
                 </TableCell>
@@ -156,7 +160,7 @@ export default function ProductsTable({
                       size="sm"
                       variant="ghost"
                       onClick={() => navigate(`/product/${product.id}`)}
-                      title="View Details"
+                      title={t("products.table.actions.view")}
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -165,7 +169,7 @@ export default function ProductsTable({
                       variant="ghost"
                       onClick={() => onEdit(product)}
                       className="bg-gradient-to-r from-amber-500 to-green-600 hover:from-amber-600 hover:to-green-700 text-white"
-                      title="Edit"
+                      title={t("products.table.actions.edit")}
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
@@ -174,7 +178,7 @@ export default function ProductsTable({
                       variant="ghost"
                       onClick={() => onDelete(product.id)}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      title="Delete"
+                      title={t("products.table.actions.delete")}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -188,4 +192,3 @@ export default function ProductsTable({
     </div>
   );
 }
-

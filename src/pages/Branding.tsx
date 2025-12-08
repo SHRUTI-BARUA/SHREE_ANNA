@@ -14,9 +14,12 @@ import {
   Users,
   Package,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 
 export default function Branding() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-green-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -26,14 +29,11 @@ export default function Branding() {
             <div className="flex items-center gap-3 mb-4">
               <Sparkles className="w-12 h-12" />
               <div>
-                <h1 className="text-4xl md:text-5xl font-bold">Shree Anna Branding</h1>
-                <p className="text-xl text-amber-100">श्री अन्न ब्रांडिंग</p>
+                <h1 className="text-4xl md:text-5xl font-bold">{t("branding.heroTitle")}</h1>
+                <p className="text-xl text-amber-100">{t("branding.heroSubtitle")}</p>
               </div>
             </div>
-            <p className="text-xl mb-6 max-w-3xl">
-              Build your millet brand under the prestigious "Shree Anna" initiative. 
-              Access marketing resources, packaging designs, and promotional materials to grow your business.
-            </p>
+            <p className="text-xl mb-6 max-w-3xl">{t("branding.heroSubtitle")}</p>
             <div className="flex flex-wrap gap-4">
             <a
                  href="/branding/BrandKit.pdf" // file path in public/branding
@@ -42,13 +42,13 @@ export default function Branding() {
               >
              <Button size="lg" className="bg-white text-orange-600 hover:bg-gray-100">
                <Download className="w-5 h-5 mr-2" />
-                Download Brand Kit
+                {t("branding.downloadKit")}
             </Button>
              </a>
 
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
                 <Share2 className="w-5 h-5 mr-2" />
-                Share Success Story
+                {t("branding.shareStory")}
               </Button>
             </div>
           </div>
@@ -62,38 +62,38 @@ export default function Branding() {
             <CardContent className="p-6 text-center">
               <Package className="w-10 h-10 mx-auto text-amber-600 mb-2" />
               <p className="text-3xl font-bold text-gray-900">500+</p>
-              <p className="text-sm text-gray-600">Branded Products</p>
+              <p className="text-sm text-gray-600">{t("branding.stats.brandedProducts")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6 text-center">
               <Users className="w-10 h-10 mx-auto text-green-600 mb-2" />
               <p className="text-3xl font-bold text-gray-900">10,000+</p>
-              <p className="text-sm text-gray-600">Brand Partners</p>
+              <p className="text-sm text-gray-600">{t("branding.stats.brandPartners")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6 text-center">
               <TrendingUp className="w-10 h-10 mx-auto text-blue-600 mb-2" />
               <p className="text-3xl font-bold text-gray-900">₹50 Cr+</p>
-              <p className="text-sm text-gray-600">Brand Value</p>
+              <p className="text-sm text-gray-600">{t("branding.stats.brandValue")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-6 text-center">
               <Award className="w-10 h-10 mx-auto text-purple-600 mb-2" />
               <p className="text-3xl font-bold text-gray-900">15+</p>
-              <p className="text-sm text-gray-600">Awards Won</p>
+              <p className="text-sm text-gray-600">{t("branding.stats.awards")}</p>
             </CardContent>
           </Card>
         </div>
 
         <Tabs defaultValue="guidelines" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="guidelines">Brand Guidelines</TabsTrigger>
-            <TabsTrigger value="packaging">Packaging Designs</TabsTrigger>
-            <TabsTrigger value="marketing">Marketing Materials</TabsTrigger>
-            <TabsTrigger value="success">Success Stories</TabsTrigger>
+            <TabsTrigger value="guidelines">{t("branding.tabs.guidelines")}</TabsTrigger>
+            <TabsTrigger value="packaging">{t("branding.tabs.packaging")}</TabsTrigger>
+            <TabsTrigger value="marketing">{t("branding.tabs.marketing")}</TabsTrigger>
+            <TabsTrigger value="success">{t("branding.tabs.success")}</TabsTrigger>
           </TabsList>
 
           {/* Brand Guidelines */}
@@ -434,4 +434,3 @@ export default function Branding() {
     </div>
   );
 }
-

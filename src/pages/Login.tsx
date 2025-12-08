@@ -305,10 +305,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const navigate = useNavigate();
   const { signIn, loading, sendOtp, verifyOtp } = useAuthStore();
+  const { t } = useTranslation();
 
   const [method, setMethod] = useState<"email" | "phone">("email");
   const [email, setEmail] = useState("");
@@ -325,9 +327,13 @@ export default function Login() {
 
     const { error } = await signIn(email, password);
     if (error) {
-      toast({ title: "Login failed", description: error.message, variant: "destructive" });
+      toast({
+        title: t("auth.login.toast.loginFailed"),
+        description: error.message || t("auth.common.genericError"),
+        variant: "destructive",
+      });
     } else {
-      toast({ title: "Welcome Back!" });
+      toast({ title: t("auth.login.toast.welcomeBack") });
       navigate("/dashboard", { replace: true });
     }
 
@@ -339,9 +345,16 @@ export default function Login() {
 
     const { error } = await sendOtp(phone.trim());
     if (error) {
-      toast({ title: "OTP Error", description: error.message, variant: "destructive" });
+      toast({
+        title: t("auth.login.toast.otpError"),
+        description: error.message || t("auth.common.genericError"),
+        variant: "destructive",
+      });
     } else {
-      toast({ title: "OTP sent", description: "Check your phone" });
+      toast({
+        title: t("auth.login.toast.otpSent"),
+        description: t("auth.login.toast.otpSentDesc"),
+      });
       setOtpSent(true);
     }
 
@@ -353,9 +366,13 @@ export default function Login() {
 
     const { error } = await verifyOtp(phone.trim(), otp.trim());
     if (error) {
-      toast({ title: "Verification Failed", description: error.message, variant: "destructive" });
+      toast({
+        title: t("auth.login.toast.verificationFailed"),
+        description: error.message || t("auth.common.genericError"),
+        variant: "destructive",
+      });
     } else {
-      toast({ title: "Login Successful" });
+      toast({ title: t("auth.login.toast.loginSuccess") });
       navigate("/dashboard", { replace: true });
     }
 
@@ -366,54 +383,102 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-green-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
-          <CardDescription className="text-center">Login to your account</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center">{t("auth.login.title")}</CardTitle>
+          <CardDescription className="text-center">{t("auth.login.chooseMethod")}</CardDescription>
         </CardHeader>
 
         <CardContent>
           <div className="flex gap-3 mb-4">
-            <Button variant={method === "email" ? "default" : "outline"} className="w-1/2"
-              onClick={() => setMethod("email")}>Email</Button>
-            <Button variant={method === "phone" ? "default" : "outline"} className="w-1/2"
-              onClick={() => setMethod("phone")}>Phone OTP</Button>
+            <Button
+              variant={method === "email" ? "default" : "outline"}
+              className="w-1/2"
+              onClick={() => setMethod("email")}
+            >
+              {t("auth.login.emailTab")}
+            </Button>
+            <Button
+              variant={method === "phone" ? "default" : "outline"}
+              className="w-1/2"
+              onClick={() => setMethod("phone")}
+            >
+              {t("auth.login.phoneTab")}
+            </Button>
           </div>
 
           {method === "email" && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Email</Label>
-                <Input placeholder="you@example.com" value={email}
-                  onChange={(e) => setEmail(e.target.value)} disabled={isSubmitting} />
+                <Label>{t("auth.login.emailLabel")}</Label>
+                <Input
+                  placeholder={t("auth.login.emailPlaceholder")}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
+                />
               </div>
 
               <div className="space-y-2">
-                <Label>Password</Label>
-                <Input type="password" placeholder="••••••" value={password}
-                  onChange={(e) => setPassword(e.target.value)} disabled={isSubmitting} />
+                <Label>{t("auth.login.passwordLabel")}</Label>
+                <Input
+                  type="password"
+                  placeholder={t("auth.login.passwordPlaceholder")}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting}
+                />
               </div>
 
               <Button className="w-full" onClick={handleEmailLogin} disabled={isSubmitting || loading}>
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    {t("auth.login.sending")}
+                  </>
+                ) : (
+                  t("auth.login.signIn")
+                )}
               </Button>
             </div>
           )}
 
           {method === "phone" && (
             <div className="space-y-4">
-              <Input placeholder="+91XXXXXXXXXX" value={phone}
-                onChange={(e) => setPhone(e.target.value)} disabled={isSubmitting} />
+              <Input
+                placeholder={t("auth.login.phonePlaceholder")}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={isSubmitting}
+              />
 
               {!otpSent ? (
                 <Button className="w-full" onClick={handleSendOtp} disabled={loading || isSubmitting}>
-                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send OTP"}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      {t("auth.login.sendingOtp")}
+                    </>
+                  ) : (
+                    t("auth.login.sendOtp")
+                  )}
                 </Button>
               ) : (
                 <>
-                  <Input placeholder="Enter OTP" value={otp}
-                    onChange={(e) => setOtp(e.target.value)} disabled={isSubmitting} />
+                  <Input
+                    placeholder={t("auth.login.otpPlaceholder")}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    disabled={isSubmitting}
+                  />
 
                   <Button className="w-full" onClick={handleVerifyOtp}>
-                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verify & Login"}
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        {t("auth.login.verifyingOtp")}
+                      </>
+                    ) : (
+                      t("auth.login.verifyOtp")
+                    )}
                   </Button>
                 </>
               )}
@@ -421,9 +486,9 @@ export default function Login() {
           )}
 
           <div className="mt-4 text-center text-sm">
-            New here?{" "}
+            {t("auth.login.newUserPrompt")}{" "}
             <Link to="/signup" className="text-primary hover:underline font-medium">
-              Create Account
+              {t("auth.login.createAccount")}
             </Link>
           </div>
         </CardContent>

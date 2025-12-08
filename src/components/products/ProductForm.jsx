@@ -29,6 +29,7 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { useTranslation } from "react-i18next";
 
 const milletTypes = [
   "foxtail_millet",
@@ -60,6 +61,7 @@ export default function ProductForm({
   isSubmitting,
   error: externalError,
 }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
     millet_type: "",
@@ -80,6 +82,10 @@ export default function ProductForm({
   const [submitError, setSubmitError] = useState(null);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [imagePreviews, setImagePreviews] = useState([]);
+
+  const getMilletLabel = (value) => t(`millets.types.${value}`);
+  const getProductFormLabel = (value) => t(`millets.forms.${value}`);
+  const getQualityLabel = (value) => t(`millets.quality.${value}`);
 
   useEffect(() => {
     if (product) {
@@ -176,7 +182,7 @@ export default function ProductForm({
     const currentImageCount = formData.images.length;
     if (currentImageCount + files.length > 10) {
       setSubmitError(
-        `You can upload a maximum of 10 images. You currently have ${currentImageCount} image(s).`
+        t("products.form.errors.imageLimit", { count: currentImageCount })
       );
       e.target.value = "";
       return;
@@ -191,7 +197,7 @@ export default function ProductForm({
 
     if (validFiles.length !== files.length) {
       setSubmitError(
-        "Some files were invalid. Please upload only image files under 5MB."
+        t("products.form.errors.invalidImages")
       );
       e.target.value = "";
       return;
@@ -256,7 +262,7 @@ export default function ProductForm({
     } catch (error) {
       console.error("Error uploading images:", error);
       setSubmitError(
-        error.message || "Failed to upload images. Please try again."
+        error.message || t("products.form.alertDescription")
       );
     } finally {
       setUploadingImages(false);
@@ -280,53 +286,54 @@ export default function ProductForm({
     const newErrors = {};
 
     if (!formData.title || formData.title.trim() === "") {
-      newErrors.title = "Title is required";
+      newErrors.title = t("products.form.errors.titleRequired");
     }
 
     if (!formData.millet_type || formData.millet_type.trim() === "") {
-      newErrors.millet_type = "Millet type is required";
+      newErrors.millet_type = t("products.form.errors.milletTypeRequired");
     } else if (!milletTypes.includes(formData.millet_type)) {
-      newErrors.millet_type = "Please select a valid millet type";
+      newErrors.millet_type = t("products.form.errors.milletTypeInvalid");
     }
 
     if (!formData.product_form || formData.product_form.trim() === "") {
-      newErrors.product_form = "Product form is required";
+      newErrors.product_form = t("products.form.errors.productFormRequired");
     } else if (!productForms.includes(formData.product_form)) {
-      newErrors.product_form = "Please select a valid product form";
+      newErrors.product_form = t("products.form.errors.productFormInvalid");
     }
 
     if (!formData.location_state || formData.location_state.trim() === "") {
-      newErrors.location_state = "State is required";
+      newErrors.location_state = t("products.form.errors.stateRequired");
     }
 
     if (
       !formData.location_district ||
       formData.location_district.trim() === ""
     ) {
-      newErrors.location_district = "District is required";
+      newErrors.location_district = t("products.form.errors.districtRequired");
     }
 
     if (!formData.price_per_kg || formData.price_per_kg <= 0) {
-      newErrors.price_per_kg = "Price per kg must be greater than 0";
+      newErrors.price_per_kg = t("products.form.errors.priceRequired");
     }
 
     if (
       !formData.available_quantity_kg ||
       formData.available_quantity_kg <= 0
     ) {
-      newErrors.available_quantity_kg =
-        "Available quantity must be greater than 0";
+      newErrors.available_quantity_kg = t(
+        "products.form.errors.availableQuantityRequired"
+      );
     }
 
     if (formData.minimum_order_kg && formData.minimum_order_kg <= 0) {
-      newErrors.minimum_order_kg = "Minimum order must be greater than 0";
+      newErrors.minimum_order_kg = t("products.form.errors.minimumOrderRequired");
     }
 
     if (
       formData.moisture_content &&
       (formData.moisture_content < 0 || formData.moisture_content > 100)
     ) {
-      newErrors.moisture_content = "Moisture content must be between 0 and 100";
+      newErrors.moisture_content = t("products.form.errors.moistureRange");
     }
 
     setErrors(newErrors);
@@ -339,21 +346,21 @@ export default function ProductForm({
     setErrors({});
 
     if (!validateForm()) {
-      setSubmitError("Please fix the errors in the form before submitting.");
+      setSubmitError(t("products.form.errors.fixErrors"));
       return;
     }
 
     // Ensure millet_type and product_form are valid before submitting
     if (!milletTypes.includes(formData.millet_type)) {
       setSubmitError(
-        "Invalid millet type selected. Please select a valid option."
+        t("products.form.errors.invalidMilletType")
       );
       return;
     }
 
     if (!productForms.includes(formData.product_form)) {
       setSubmitError(
-        "Invalid product form selected. Please select a valid option."
+        t("products.form.errors.invalidProductForm")
       );
       return;
     }
@@ -366,24 +373,24 @@ export default function ProductForm({
       {(submitError || externalError) && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>{t("products.form.alertTitle")}</AlertTitle>
           <AlertDescription>
             {submitError ||
               externalError?.message ||
-              "An error occurred. Please try again."}
+              t("products.form.alertDescription")}
           </AlertDescription>
         </Alert>
       )}
 
       <div className="grid md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="title">Title *</Label>
+          <Label htmlFor="title">{t("products.form.labels.title")}</Label>
           <Input
             id="title"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="e.g., Premium Organic Foxtail Millet"
+            placeholder={t("products.form.placeholders.title")}
             required
             className={errors.title ? "border-destructive" : ""}
           />
@@ -393,7 +400,7 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="millet_type">Millet Type *</Label>
+          <Label htmlFor="millet_type">{t("products.form.labels.milletType")}</Label>
           <Select
             value={formData.millet_type}
             onValueChange={(value) => {
@@ -408,14 +415,12 @@ export default function ProductForm({
               id="millet_type"
               className={errors.millet_type ? "border-destructive" : ""}
             >
-              <SelectValue placeholder="Select Millet Type" />
+              <SelectValue placeholder={t("products.form.placeholders.milletType")} />
             </SelectTrigger>
             <SelectContent>
               {milletTypes.map((mt) => (
                 <SelectItem key={mt} value={mt}>
-                  {mt
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}
+                  {getMilletLabel(mt)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -428,7 +433,7 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="product_form">Product Form *</Label>
+          <Label htmlFor="product_form">{t("products.form.labels.productForm")}</Label>
           <Select
             value={formData.product_form}
             onValueChange={(value) => {
@@ -443,14 +448,12 @@ export default function ProductForm({
               id="product_form"
               className={errors.product_form ? "border-destructive" : ""}
             >
-              <SelectValue placeholder="Select Product Form" />
+              <SelectValue placeholder={t("products.form.placeholders.productForm")} />
             </SelectTrigger>
             <SelectContent>
               {productForms.map((pf) => (
                 <SelectItem key={pf} value={pf}>
-                  {pf
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}
+                  {getProductFormLabel(pf)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -463,7 +466,7 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="quality_grade">Quality Grade</Label>
+          <Label htmlFor="quality_grade">{t("products.form.labels.qualityGrade")}</Label>
           <Select
             value={formData.quality_grade}
             onValueChange={(value) =>
@@ -471,14 +474,12 @@ export default function ProductForm({
             }
           >
             <SelectTrigger id="quality_grade">
-              <SelectValue />
+              <SelectValue placeholder={t("products.form.options.qualityGrades")} />
             </SelectTrigger>
             <SelectContent>
               {qualityGrades.map((q) => (
                 <SelectItem key={q} value={q}>
-                  {q
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase())}
+                  {getQualityLabel(q)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -486,7 +487,7 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="price_per_kg">Price per kg (₹) *</Label>
+          <Label htmlFor="price_per_kg">{t("products.form.labels.pricePerKg")}</Label>
           <Input
             id="price_per_kg"
             type="number"
@@ -495,7 +496,7 @@ export default function ProductForm({
             onChange={handleChange}
             min={0}
             step="0.01"
-            placeholder="0.00"
+            placeholder={t("products.form.placeholders.pricePerKg")}
             required
             className={errors.price_per_kg ? "border-destructive" : ""}
           />
@@ -508,7 +509,7 @@ export default function ProductForm({
 
         <div>
           <Label htmlFor="available_quantity_kg">
-            Available Quantity (kg) *
+            {t("products.form.labels.availableQuantity")}
           </Label>
           <Input
             id="available_quantity_kg"
@@ -518,7 +519,7 @@ export default function ProductForm({
             onChange={handleChange}
             min={0}
             step="0.01"
-            placeholder="0.00"
+            placeholder={t("products.form.placeholders.availableQuantity")}
             required
             className={errors.available_quantity_kg ? "border-destructive" : ""}
           />
@@ -530,7 +531,7 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="minimum_order_kg">Minimum Order (kg)</Label>
+          <Label htmlFor="minimum_order_kg">{t("products.form.labels.minimumOrder")}</Label>
           <Input
             id="minimum_order_kg"
             type="number"
@@ -539,7 +540,7 @@ export default function ProductForm({
             onChange={handleChange}
             min={1}
             step="0.01"
-            placeholder="1"
+            placeholder={t("products.form.placeholders.minimumOrder")}
             className={errors.minimum_order_kg ? "border-destructive" : ""}
           />
           {errors.minimum_order_kg && (
@@ -550,7 +551,7 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="moisture_content">Moisture Content (%)</Label>
+          <Label htmlFor="moisture_content">{t("products.form.labels.moistureContent")}</Label>
           <Input
             id="moisture_content"
             type="number"
@@ -560,7 +561,7 @@ export default function ProductForm({
             min={0}
             max={100}
             step="0.01"
-            placeholder="0"
+            placeholder={t("products.form.placeholders.moistureContent")}
             className={errors.moisture_content ? "border-destructive" : ""}
           />
           {errors.moisture_content && (
@@ -571,7 +572,7 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="harvest_date">Harvest Date</Label>
+          <Label htmlFor="harvest_date">{t("products.form.labels.harvestDate")}</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -587,7 +588,7 @@ export default function ProductForm({
                 {formData.harvest_date ? (
                   format(new Date(formData.harvest_date), "PPP")
                 ) : (
-                  <span>Pick a date</span>
+                  <span>{t("products.form.placeholders.harvestDate")}</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -630,13 +631,13 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="location_state">Location: State *</Label>
+          <Label htmlFor="location_state">{t("products.form.labels.locationState")}</Label>
           <Input
             id="location_state"
             name="location_state"
             value={formData.location_state}
             onChange={handleChange}
-            placeholder="e.g., Uttar Pradesh"
+            placeholder={t("products.form.placeholders.locationState")}
             required
             className={errors.location_state ? "border-destructive" : ""}
           />
@@ -648,13 +649,13 @@ export default function ProductForm({
         </div>
 
         <div>
-          <Label htmlFor="location_district">Location: District *</Label>
+          <Label htmlFor="location_district">{t("products.form.labels.locationDistrict")}</Label>
           <Input
             id="location_district"
             name="location_district"
             value={formData.location_district}
             onChange={handleChange}
-            placeholder="e.g., Aligarh"
+            placeholder={t("products.form.placeholders.locationDistrict")}
             required
             className={errors.location_district ? "border-destructive" : ""}
           />
@@ -674,24 +675,24 @@ export default function ProductForm({
             }
           />
           <Label htmlFor="organic_certified" className="cursor-pointer">
-            Organic Certified
+            {t("products.form.labels.organicCertified")}
           </Label>
         </div>
 
         <div className="md:col-span-2">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">{t("products.form.labels.description")}</Label>
           <Textarea
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
             rows={4}
-            placeholder="Describe your product, its quality, origin, and any special features..."
+            placeholder={t("products.form.placeholders.description")}
           />
         </div>
 
         <div className="md:col-span-2">
-          <Label htmlFor="images">Product Images</Label>
+          <Label htmlFor="images">{t("products.form.labels.images")}</Label>
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               <label
@@ -706,12 +707,12 @@ export default function ProductForm({
                 {uploadingImages ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">Uploading...</span>
+                    <span className="text-sm">{t("products.form.upload.uploading")}</span>
                   </>
                 ) : (
                   <>
                     <Upload className="h-4 w-4" />
-                    <span className="text-sm">Upload Images</span>
+                    <span className="text-sm">{t("products.form.upload.uploadImages")}</span>
                   </>
                 )}
                 <input
@@ -726,8 +727,8 @@ export default function ProductForm({
               </label>
               <p className="text-sm text-muted-foreground">
                 {uploadingImages
-                  ? "Please wait while images are being uploaded..."
-                  : "Upload up to 10 images (max 5MB each)"}
+                  ? t("products.form.upload.uploadingStatus")
+                  : t("products.form.upload.helper")}
               </p>
             </div>
 
@@ -736,7 +737,7 @@ export default function ProductForm({
                 <div className="text-center">
                   <Loader2 className="h-12 w-12 mx-auto text-primary mb-2 animate-spin" />
                   <p className="text-sm text-muted-foreground">
-                    Uploading images...
+                    {t("products.form.upload.uploadingStatus")}
                   </p>
                 </div>
               </div>
@@ -765,7 +766,7 @@ export default function ProductForm({
                         onClick={() => handleRemoveImage(index)}
                         disabled={isSubmitting}
                         className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
-                        aria-label="Remove image"
+                        aria-label={t("products.form.upload.removing")}
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -780,7 +781,7 @@ export default function ProductForm({
                 <div className="text-center">
                   <ImageIcon className="h-12 w-12 mx-auto text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground">
-                    No images uploaded yet
+                    {t("products.form.upload.none")}
                   </p>
                 </div>
               </div>
@@ -796,16 +797,16 @@ export default function ProductForm({
           onClick={onCancel}
           disabled={isSubmitting || uploadingImages}
         >
-          Cancel
+          {t("products.form.buttons.cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting || uploadingImages}>
           {isSubmitting
-            ? "Saving..."
+            ? t("products.form.buttons.saving")
             : uploadingImages
-            ? "Uploading Images..."
+            ? t("products.form.buttons.uploadingImages")
             : product
-            ? "Update Product"
-            : "Add Product"}
+            ? t("products.form.buttons.updateProduct")
+            : t("products.form.buttons.addProduct")}
         </Button>
       </div>
     </form>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
 import CoinPaymentModal from "@/components/CoinPaymentModal";
+import { useTranslation } from "react-i18next";
 
 import mplaceImg from "@/assets/mplace.jpg";
 
@@ -27,6 +28,7 @@ export interface Product {
 }
 
 export default function Marketplace() {
+  const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [weight, setWeight] = useState<number>(0);
@@ -41,6 +43,35 @@ export default function Marketplace() {
   const [filterGrade, setFilterGrade] = useState<string>("all"); // all / premium / A / B / C
   const [filterPrice, setFilterPrice] = useState<number | null>(null); // max price
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+
+  const formatMilletType = (value?: string | null) => {
+    if (!value) return "";
+    const translationKey = `millets.types.${value}`;
+    const translated = t(translationKey);
+    if (translated && translated !== translationKey) return translated;
+    return value
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+  };
+
+  const formatQualityGrade = (value?: string | null) => {
+    if (!value) return "";
+    const normalized = value.toLowerCase().replace(/\s+/g, "_");
+    const key =
+      normalized === "a"
+        ? "grade_a"
+        : normalized === "b"
+        ? "grade_b"
+        : normalized === "c"
+        ? "grade_c"
+        : normalized.startsWith("grade_")
+        ? normalized
+        : normalized;
+    const translationKey = `millets.quality.${key}`;
+    const translated = t(translationKey);
+    if (translated && translated !== translationKey) return translated;
+    return value.toUpperCase();
+  };
 
   const resetDrawer = () => {
     setIsDrawerOpen(false);
@@ -121,9 +152,13 @@ export default function Marketplace() {
   const openRazorpayPayment = async () => {
     if (!selectedProduct) return;
     const minOrder = selectedProduct.minimum_order_kg ?? 1;
-    if (!weight || weight < minOrder) return alert(`Enter at least ${minOrder} kg`);
-    if (!customerName || !customerPhone) return alert("Enter name & phone!");
-    if (!(window as any).Razorpay) return alert("Razorpay not loaded!");
+    if (!weight || weight < minOrder) {
+      return alert(t("marketplace.alerts.enterMinWeight", { min: minOrder }));
+    }
+    if (!customerName || !customerPhone) {
+      return alert(t("marketplace.alerts.enterNamePhone"));
+    }
+    if (!(window as any).Razorpay) return alert(t("marketplace.alerts.razorpayMissing"));
 
     try {
       const orderRes = await fetch(
@@ -142,7 +177,7 @@ export default function Marketplace() {
         key: "rzp_test_Rl7PSe95LBeOno",
         amount: order.amount,
         currency: order.currency,
-        name: "Millet Marketplace",
+        name: t("marketplace.heroTitle"),
         description: selectedProduct.title,
         order_id: order.id,
         handler: async (response: any) => {
@@ -156,8 +191,8 @@ export default function Marketplace() {
               }
             );
             const verify = await verifyRes.json();
-            if (!verify.success) return alert("Payment verification failed!");
-            if (!userId) return alert("User not logged in");
+            if (!verify.success) return alert(t("marketplace.alerts.paymentVerificationFailed"));
+            if (!userId) return alert(t("marketplace.alerts.userNotLoggedIn"));
 
             await supabase.from("orders").insert([
               {
@@ -180,11 +215,11 @@ export default function Marketplace() {
               .update({ available_quantity_kg: newQty })
               .eq("id", selectedProduct.id);
 
-            alert("Payment Successful & Order Saved!");
+            alert(t("marketplace.alerts.paymentSuccess"));
             resetDrawer();
           } catch (err) {
             console.error(err);
-            alert("Error processing payment.");
+            alert(t("marketplace.alerts.errorProcessingPayment"));
           }
         },
         prefill: { name: customerName, contact: customerPhone },
@@ -195,7 +230,7 @@ export default function Marketplace() {
       razor.open();
     } catch (err) {
       console.error(err);
-      alert("Error creating Razorpay order.");
+      alert(t("marketplace.alerts.errorCreatingOrder"));
     }
   };
 
@@ -207,7 +242,7 @@ export default function Marketplace() {
         <div className="absolute inset-0">
           <img
             src={mplaceImg}
-            alt="Millet marketplace"
+            alt={t("marketplace.heroTitle")}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-amber-700/30 via-amber-500/20 to-green-600/30" />
@@ -218,10 +253,10 @@ export default function Marketplace() {
           <div className="absolute inset-0 bg-black/45" />
           <div className="relative max-w-7xl mx-auto">
             <h1 className="text-4xl font-bold text-white mb-3">
-              Millet Marketplace
+              {t("marketplace.heroTitle")}
             </h1>
             <p className="text-white text-lg mb-6">
-              Connect with quality millet suppliers across India
+              {t("marketplace.heroSubtitle")}
             </p>
 
             {/* Search + Filters */}
@@ -229,7 +264,7 @@ export default function Marketplace() {
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                 <Input
-                  placeholder="Search..."
+                  placeholder={t("common.searchPlaceholder")}
                   className="pl-10 h-12 bg-white/95 border-0 shadow-sm"
                 />
               </div>
@@ -237,7 +272,7 @@ export default function Marketplace() {
                 className="bg-brand-purple text-white h-12 px-6 shrink-0"
                 onClick={() => setIsFilterDrawerOpen(true)}
               >
-                Filters
+                {t("marketplace.filtersButton")}
               </Button>
             </div>
           </div>
@@ -247,7 +282,9 @@ export default function Marketplace() {
       {/* Product Grid */}
       <div className="max-w-7xl mx-auto px-8 py-8">
         <p className="text-muted-foreground mb-6">
-          {isLoading ? "Loading..." : `${filteredProducts.length} products found`}
+          {isLoading
+            ? t("marketplace.loading")
+            : t("marketplace.productsFound", { count: filteredProducts.length })}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {filteredProducts.map((product: Product) => (
@@ -270,19 +307,19 @@ export default function Marketplace() {
                 <div className="absolute top-3 right-3 flex flex-wrap gap-2">
                   {product.quality_grade && (
                     <Badge className="bg-brand-orange text-white">
-                      {product.quality_grade.toUpperCase()}
+                      {formatQualityGrade(product.quality_grade)}
                     </Badge>
                   )}
                   {product.organic_certified && (
                     <Badge className="bg-brand-green text-white">
-                      Organic
+                      {t("marketplace.organicBadge")}
                     </Badge>
                   )}
                 </div>
               </div>
               <div className="p-4">
                 <p className="text-xs text-muted-foreground mb-1">
-                  {product.millet_type}
+                  {formatMilletType(product.millet_type)}
                 </p>
                 <h3 className="font-bold text-lg mb-3">{product.title}</h3>
                 <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
@@ -295,7 +332,9 @@ export default function Marketplace() {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Package className="w-4 h-4" />{" "}
-                    {product.available_quantity_kg ?? 0} kg available
+                    {t("marketplace.available", {
+                      count: product.available_quantity_kg ?? 0,
+                    })}
                   </div>
                 </div>
                 <div className="mb-4">
@@ -303,10 +342,14 @@ export default function Marketplace() {
                     <span className="text-2xl font-bold text-brand-green">
                       ₹{product.price_per_kg}
                     </span>
-                    <span className="text-sm text-muted-foreground">/kg</span>
+                    <span className="text-sm text-muted-foreground">
+                      {t("marketplace.pricePerKgUnit")}
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Min order: {product.minimum_order_kg ?? 1} kg
+                    {t("marketplace.minOrder", {
+                      count: product.minimum_order_kg ?? 1,
+                    })}
                   </p>
                 </div>
                 <Button
@@ -317,7 +360,7 @@ export default function Marketplace() {
                     setIsDrawerOpen(true);
                   }}
                 >
-                  View Details
+                  {t("marketplace.viewDetails")}
                 </Button>
               </div>
             </Card>
@@ -351,7 +394,7 @@ export default function Marketplace() {
               <h2 className="text-2xl font-bold">{selectedProduct.title}</h2>
               {selectedProduct.quality_grade && (
                 <Badge className="bg-brand-orange text-white">
-                  {selectedProduct.quality_grade.toUpperCase()}
+                  {formatQualityGrade(selectedProduct.quality_grade)}
                 </Badge>
               )}
             </div>
@@ -368,7 +411,9 @@ export default function Marketplace() {
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Package className="w-4 h-4" />{" "}
-                {selectedProduct.available_quantity_kg ?? 0} kg available
+                {t("marketplace.available", {
+                  count: selectedProduct.available_quantity_kg ?? 0,
+                })}
               </div>
             </div>
 
@@ -377,15 +422,21 @@ export default function Marketplace() {
                 <span className="text-2xl font-bold text-brand-green">
                   ₹{selectedProduct.price_per_kg}
                 </span>
-                <span className="text-sm text-muted-foreground">/kg</span>
+                <span className="text-sm text-muted-foreground">
+                  {t("marketplace.pricePerKgUnit")}
+                </span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Minimum order: {selectedProduct.minimum_order_kg ?? 1} kg
+                {t("marketplace.minOrder", {
+                  count: selectedProduct.minimum_order_kg ?? 1,
+                })}
               </p>
             </div>
 
             <div className="mb-4">
-              <label className="text-sm font-medium">Quantity (kg)</label>
+              <label className="text-sm font-medium">
+                {t("marketplace.quantityLabel")}
+              </label>
               <Input
                 type="number"
                 value={weight}
@@ -395,7 +446,7 @@ export default function Marketplace() {
             </div>
 
             <div className="mb-4">
-              <label className="text-sm font-medium">Name</label>
+              <label className="text-sm font-medium">{t("marketplace.nameLabel")}</label>
               <Input
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
@@ -403,7 +454,7 @@ export default function Marketplace() {
             </div>
 
             <div className="mb-4">
-              <label className="text-sm font-medium">Phone</label>
+              <label className="text-sm font-medium">{t("marketplace.phoneLabel")}</label>
               <Input
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
@@ -415,14 +466,14 @@ export default function Marketplace() {
                 onClick={() => setShowCoinModal(true)}
                 className="bg-brand-green text-white w-full"
               >
-                Pay with Coins ({coinBalance ?? 0} 🪙)
+                {t("marketplace.payWithCoins", { balance: coinBalance ?? 0 })}
               </Button>
 
               <Button
                 onClick={openRazorpayPayment}
                 className="bg-brand-purple text-white w-full"
               >
-                Pay with Razorpay
+                {t("marketplace.payWithRazorpay")}
               </Button>
             </div>
           </div>
@@ -439,43 +490,43 @@ export default function Marketplace() {
             className="fixed left-0 top-0 h-full w-[300px] bg-white shadow-2xl p-6 overflow-y-auto z-50"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-bold mb-4">Filters</h2>
+            <h2 className="text-xl font-bold mb-4">{t("marketplace.filterDrawer.title")}</h2>
 
             <div className="mb-4">
               <label className="block mb-1 font-medium">
-                Organic / Inorganic
+                {t("marketplace.filterDrawer.organicLabel")}
               </label>
               <select
                 className="border rounded p-2 w-full"
                 value={filterOrganic}
                 onChange={(e) => setFilterOrganic(e.target.value)}
               >
-                <option value="all">All</option>
-                <option value="organic">Organic</option>
-                <option value="inorganic">Inorganic</option>
+                <option value="all">{t("marketplace.filterDrawer.organicAll")}</option>
+                <option value="organic">{t("marketplace.filterDrawer.organicOnly")}</option>
+                <option value="inorganic">{t("marketplace.filterDrawer.inorganicOnly")}</option>
               </select>
             </div>
 
             <div className="mb-4">
-              <label className="block mb-1 font-medium">Grade</label>
+              <label className="block mb-1 font-medium">{t("marketplace.filterDrawer.gradeLabel")}</label>
               <select
                 className="border rounded p-2 w-full"
                 value={filterGrade}
                 onChange={(e) => setFilterGrade(e.target.value)}
               >
-                <option value="all">All Grades</option>
-                <option value="premium">Premium</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
+                <option value="all">{t("marketplace.filterDrawer.gradeAll")}</option>
+                <option value="premium">{t("marketplace.filterDrawer.gradePremium")}</option>
+                <option value="A">{t("marketplace.filterDrawer.gradeA")}</option>
+                <option value="B">{t("marketplace.filterDrawer.gradeB")}</option>
+                <option value="C">{t("marketplace.filterDrawer.gradeC")}</option>
               </select>
             </div>
 
             <div className="mb-4">
-              <label className="block mb-1 font-medium">Max Price ₹</label>
+              <label className="block mb-1 font-medium">{t("marketplace.filterDrawer.maxPriceLabel")}</label>
               <input
                 type="number"
-                placeholder="Max Price ₹"
+                placeholder={t("marketplace.filterDrawer.maxPricePlaceholder")}
                 className="border rounded p-2 w-full"
                 value={filterPrice ?? ""}
                 onChange={(e) =>
@@ -488,7 +539,7 @@ export default function Marketplace() {
               className="bg-brand-green text-white w-full"
               onClick={() => setIsFilterDrawerOpen(false)}
             >
-              Apply Filters
+              {t("marketplace.filterDrawer.applyButton")}
             </Button>
           </div>
         </div>

@@ -1,9 +1,16 @@
 import { FC, useState, useEffect } from "react";
 import {
-  X, Wallet2, Coins, User, HelpCircle, ShieldCheck, ChevronDown
+  X,
+  Wallet2,
+  Coins,
+  User,
+  HelpCircle,
+  ShieldCheck,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { useTranslation } from "react-i18next";
 
 interface CoinPaymentModalProps {
   product: {
@@ -30,6 +37,7 @@ const CoinPaymentModal: FC<CoinPaymentModalProps> = ({
 }) => {
   const [currentBalance, setCurrentBalance] = useState<number | null>(null);
   const [showFAQ, setShowFAQ] = useState(false);
+  const { t } = useTranslation();
 
   const totalCost = Math.ceil(weight * product.price_per_kg);
   const hasEnoughCoins = currentBalance !== null && currentBalance >= totalCost;
@@ -81,35 +89,35 @@ const CoinPaymentModal: FC<CoinPaymentModalProps> = ({
         weight,
       });
 
-      if (error) return alert("Payment RPC Failed!");
+      if (error) return alert(t("marketplace.coinModal.payment.rpcFailed"));
 
       switch (data) {
         case "SUCCESS":
-          alert(`Payment Successful! ${totalCost} coins deducted.`);
+          alert(t("marketplace.coinModal.payment.success", { amount: totalCost }));
           onPurchaseSuccess(totalCost);
           onClose();
           break;
         case "INSUFFICIENT_FUNDS":
-          alert("Payment Failed! Not enough coins.");
+          alert(t("marketplace.coinModal.payment.insufficientFunds"));
           break;
         case "BUYER_NOT_FOUND":
-          alert("Payment Failed! Buyer profile not found.");
+          alert(t("marketplace.coinModal.payment.buyerNotFound"));
           break;
         case "PRODUCT_NOT_FOUND":
-          alert("Payment Failed! Product not found.");
+          alert(t("marketplace.coinModal.payment.productNotFound"));
           break;
         case "INSUFFICIENT_PRODUCT_QUANTITY":
-          alert("Payment Failed! Not enough product in stock.");
+          alert(t("marketplace.coinModal.payment.insufficientProduct"));
           break;
         case "USER_NOT_LOGGED_IN":
-          alert("Payment Failed! Please login first.");
+          alert(t("marketplace.coinModal.payment.userNotLoggedIn"));
           break;
         default:
-          alert(`Payment Failed! Reason: ${data}`);
+          alert(t("marketplace.coinModal.payment.genericFailed", { reason: data }));
       }
     } catch (err) {
       console.error(err);
-      alert("Error during transaction.");
+      alert(t("marketplace.coinModal.payment.errorDuring"));
     }
   };
 
@@ -120,7 +128,7 @@ const CoinPaymentModal: FC<CoinPaymentModalProps> = ({
         {/* HEADER */}
         <div className="bg-gradient-to-r from-purple-600 to-amber-500 p-5 flex items-center justify-between">
           <div className="text-white font-bold text-lg flex gap-2 items-center">
-            <Wallet2 className="w-6 h-6" /> Secure Coin Payment
+            <Wallet2 className="w-6 h-6" /> {t("marketplace.coinModal.title")}
           </div>
           <X onClick={onClose} className="text-white cursor-pointer hover:scale-110 transition" />
         </div>
@@ -141,29 +149,34 @@ const CoinPaymentModal: FC<CoinPaymentModalProps> = ({
 
           {/* ORDER SUMMARY */}
           <div className="bg-white border p-4 rounded-lg shadow-sm">
-            <h3 className="font-semibold text-gray-700 mb-2">Order Summary</h3>
+            <h3 className="font-semibold text-gray-700 mb-2">{t("marketplace.coinModal.orderSummary")}</h3>
             <div className="flex justify-between text-sm">
-              <span>Product Weight:</span>
+              <span>{t("marketplace.coinModal.productWeight")}:</span>
               <span>{weight} KG</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Cost per KG:</span>
-              <span>{product.price_per_kg} Coins</span>
+              <span>{t("marketplace.coinModal.costPerKg")}:</span>
+              <span>
+                {product.price_per_kg} {t("marketplace.coinModal.coinsLabel")}
+              </span>
             </div>
             <div className="flex justify-between text-sm font-bold text-purple-600 mt-2 border-t pt-2">
-              <span>Total Required</span>
-              <span>{totalCost} Coins</span>
+              <span>{t("marketplace.coinModal.totalRequired")}</span>
+              <span>
+                {totalCost} {t("marketplace.coinModal.coinsLabel")}
+              </span>
             </div>
           </div>
 
           {/* YOUR BALANCE */}
           <div className="bg-green-50 p-4 rounded-lg border border-green-300">
-            <p className="text-sm text-gray-600">Your Wallet Balance</p>
+            <p className="text-sm text-gray-600">{t("marketplace.coinModal.walletBalance")}</p>
             <p className="text-lg font-bold text-green-700 flex items-center gap-2">
-              <Coins className="w-5 h-5" /> {currentBalance ?? "Loading..."} Coins
+              <Coins className="w-5 h-5" />{" "}
+              {currentBalance ?? t("marketplace.coinModal.loading")} {t("marketplace.coinModal.coinsLabel")}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              You can earn more coins by completing tasks, referring friends, or selling products.
+              {t("marketplace.coinModal.earnMore")}
             </p>
           </div>
 
@@ -172,26 +185,26 @@ const CoinPaymentModal: FC<CoinPaymentModalProps> = ({
             className="bg-blue-50 border border-blue-200 p-3 rounded-lg cursor-pointer"
             onClick={() => setShowFAQ(!showFAQ)}
           >
-            <div className="flex justify-between items-center">
-              <div className="flex gap-2 items-center">
-                <HelpCircle className="w-5 h-5" />
-                <p className="font-medium">What are coins?</p>
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <HelpCircle className="w-5 h-5" />
+                  <p className="font-medium">{t("marketplace.coinModal.faqQuestion")}</p>
+                </div>
+                <ChevronDown className={`transition ${showFAQ ? "rotate-180" : ""}`} />
               </div>
-              <ChevronDown className={`transition ${showFAQ ? "rotate-180" : ""}`} />
+              {showFAQ && (
+                <p className="text-sm text-blue-900 mt-2">
+                  {t("marketplace.coinModal.faqAnswer")}
+                </p>
+              )}
             </div>
-            {showFAQ && (
-              <p className="text-sm text-blue-900 mt-2">
-                Coins are digital rewards you earn by buying/selling millets. You can use them to purchase any product in the marketplace.
-              </p>
-            )}
-          </div>
 
-          {/* SECURITY */}
-          <div className="bg-gray-100 border-l-4 border-gray-500 p-4 rounded-lg text-sm flex gap-2">
-            <ShieldCheck className="text-gray-600" />
-            <p>Payments are secure & encrypted. Coins cannot be refunded once used.</p>
+            {/* SECURITY */}
+            <div className="bg-gray-100 border-l-4 border-gray-500 p-4 rounded-lg text-sm flex gap-2">
+              <ShieldCheck className="text-gray-600" />
+              <p>{t("marketplace.coinModal.securityNote")}</p>
+            </div>
           </div>
-        </div>
 
         {/* FOOTER / PAY BUTTON */}
         <div className="p-6 bg-gray-50 border-t">
@@ -200,11 +213,11 @@ const CoinPaymentModal: FC<CoinPaymentModalProps> = ({
               className="w-full text-lg bg-purple-600 hover:bg-purple-700 h-12 flex items-center justify-center gap-2 font-semibold"
               onClick={handlePayment}
             >
-              <Coins className="w-6 h-6" /> Pay {totalCost} Coins
+              <Coins className="w-6 h-6" /> {t("marketplace.coinModal.payButton", { amount: totalCost })}
             </Button>
           ) : (
             <p className="text-center text-red-600 font-medium">
-              Not enough coins. Earn more to continue.
+              {t("marketplace.coinModal.insufficientCoins")}
             </p>
           )}
         </div>

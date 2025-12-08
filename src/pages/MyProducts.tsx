@@ -26,6 +26,7 @@ import type {
 import ProductForm from "@/components/products/ProductForm";
 import ProductList from "@/components/products/ProductList";
 import ProductsTable from "@/components/products/ProductsTable";
+import { useTranslation } from "react-i18next";
 
 type Product = Tables<"products">;
 type ProductInsert = TablesInsert<"products">;
@@ -56,6 +57,7 @@ export default function MyProducts() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   // ============= FETCH PRODUCTS ==================
   const {
@@ -85,7 +87,7 @@ export default function MyProducts() {
   > = useMutation({
     mutationFn: async (data: ProductFormData): Promise<Product> => {
       if (!user) {
-        throw new Error("User not authenticated");
+        throw new Error(t("products.toasts.authRequired"));
       }
 
       const productData: ProductInsert = {
@@ -121,12 +123,12 @@ export default function MyProducts() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-products", user?.id] });
       setShowForm(false);
-      toast({ title: "Success", description: "Product added!" });
+      toast({ title: t("products.toasts.addedTitle"), description: t("products.toasts.addedDesc") });
     },
     onError: (err) =>
       toast({
-        title: "Error",
-        description: err.message,
+        title: t("products.toasts.errorTitle"),
+        description: err.message || t("auth.common.genericError"),
         variant: "destructive",
       }),
   });
@@ -145,7 +147,7 @@ export default function MyProducts() {
       data: ProductFormData;
     }): Promise<Product> => {
       if (!user) {
-        throw new Error("User not authenticated");
+        throw new Error(t("products.toasts.authRequired"));
       }
 
       const productData: ProductUpdate = {
@@ -183,12 +185,15 @@ export default function MyProducts() {
       queryClient.invalidateQueries({ queryKey: ["my-products", user?.id] });
       setEditingProduct(null);
       setShowForm(false);
-      toast({ title: "Updated", description: "Product updated successfully" });
+      toast({
+        title: t("products.toasts.updatedTitle"),
+        description: t("products.toasts.updatedDesc"),
+      });
     },
     onError: (err) =>
       toast({
-        title: "Error",
-        description: err.message,
+        title: t("products.toasts.errorTitle"),
+        description: err.message || t("auth.common.genericError"),
         variant: "destructive",
       }),
   });
@@ -198,7 +203,7 @@ export default function MyProducts() {
     useMutation({
       mutationFn: async (id: string) => {
         if (!user) {
-          throw new Error("User not authenticated");
+          throw new Error(t("products.toasts.authRequired"));
         }
 
         const { error } = await supabase
@@ -207,17 +212,20 @@ export default function MyProducts() {
           .eq("id", id)
           .eq("seller_id", user.id);
 
-        if (error) throw error;
-        return true;
-      },
+      if (error) throw error;
+      return true;
+    },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["my-products", user?.id] });
-        toast({ title: "Deleted", description: "Product removed" });
+        toast({
+          title: t("products.toasts.deletedTitle"),
+          description: t("products.toasts.deletedDesc"),
+        });
       },
       onError: (err) =>
         toast({
-          title: "Error",
-          description: err.message,
+          title: t("products.toasts.errorTitle"),
+          description: err.message || t("auth.common.genericError"),
           variant: "destructive",
         }),
     });
@@ -247,9 +255,9 @@ export default function MyProducts() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              My Products
+              {t("products.page.title")}
             </h1>
-            <p className="text-gray-600">Manage your millet products</p>
+            <p className="text-gray-600">{t("products.page.subtitle")}</p>
           </div>
 
           <div className="flex gap-2">
@@ -261,7 +269,7 @@ export default function MyProducts() {
                 className="rounded-r-none"
               >
                 <Grid className="w-4 h-4 mr-2" />
-                Grid
+                {t("products.page.grid")}
               </Button>
               <Button
                 variant={viewMode === "table" ? "default" : "ghost"}
@@ -270,7 +278,7 @@ export default function MyProducts() {
                 className="rounded-l-none"
               >
                 <Table2 className="w-4 h-4 mr-2" />
-                Table
+                {t("products.page.table")}
               </Button>
             </div>
 
@@ -282,7 +290,7 @@ export default function MyProducts() {
               className="bg-gradient-to-r from-amber-500 to-green-600 hover:from-amber-600 hover:to-green-700"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Product
+              {t("products.page.add")}
             </Button>
           </div>
         </div>
@@ -309,7 +317,7 @@ export default function MyProducts() {
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingProduct ? "Edit Product" : "Add New Product"}
+                {editingProduct ? t("products.page.editDialogTitle") : t("products.page.addDialogTitle")}
               </DialogTitle>
             </DialogHeader>
 

@@ -20,14 +20,14 @@ import { toast } from "@/hooks/use-toast";
 import { Loader2, User, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-// Farmer Profile Schema
+// Schemas with translation keys for errors (resolved via i18n at render time)
 const farmerProfileSchema = z.object({
-  profileType: z.string().min(1, "Profile type is required"),
-  contactPersonName: z.string().min(1, "Contact person name is required"),
+  profileType: z.string().min(1, "profile.errors.profileTypeRequired"),
+  contactPersonName: z.string().min(1, "profile.errors.contactPersonRequired"),
   organizationName: z.string().optional(),
-  phoneNumber: z.string().min(10, "Phone number is required"),
-  state: z.string().min(1, "State is required"),
-  district: z.string().min(1, "District is required"),
+  phoneNumber: z.string().min(10, "profile.errors.phoneRequired"),
+  state: z.string().min(1, "profile.errors.stateRequired"),
+  district: z.string().min(1, "profile.errors.districtRequired"),
   village: z.string().optional(),
   pincode: z.string().optional(),
   farmSizeAcres: z.string().optional(),
@@ -36,14 +36,13 @@ const farmerProfileSchema = z.object({
   ifscCode: z.string().optional(),
 });
 
-// Buyer Profile Schema
 const buyerProfileSchema = z.object({
-  contactPersonName: z.string().min(1, "Contact person name is required"),
+  contactPersonName: z.string().min(1, "profile.errors.contactPersonRequired"),
   businessName: z.string().optional(),
   businessType: z.string().optional(),
-  phoneNumber: z.string().min(10, "Phone number is required"),
-  state: z.string().min(1, "State is required"),
-  district: z.string().min(1, "District is required"),
+  phoneNumber: z.string().min(10, "profile.errors.phoneRequired"),
+  state: z.string().min(1, "profile.errors.stateRequired"),
+  district: z.string().min(1, "profile.errors.districtRequired"),
   village: z.string().optional(),
   pincode: z.string().optional(),
   preferredLanguage: z.string().optional(),
@@ -283,9 +282,9 @@ export default function ProfileManagement() {
                             </Select>
                           )}
                         />
-                        {farmerForm.formState.errors.profileType && (
+                        {farmerForm.formState.errors.profileType?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {farmerForm.formState.errors.profileType.message}
+                            {t(farmerForm.formState.errors.profileType.message)}
                           </p>
                         )}
                       </div>
@@ -299,9 +298,9 @@ export default function ProfileManagement() {
                           {...farmerForm.register("contactPersonName")}
                           placeholder={t("profile.form.contactPersonPlaceholder")}
                         />
-                        {farmerForm.formState.errors.contactPersonName && (
+                        {farmerForm.formState.errors.contactPersonName?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {farmerForm.formState.errors.contactPersonName.message}
+                            {t(farmerForm.formState.errors.contactPersonName.message)}
                           </p>
                         )}
                       </div>
@@ -315,9 +314,9 @@ export default function ProfileManagement() {
                           {...farmerForm.register("state")}
                           placeholder={t("profile.form.statePlaceholder")}
                         />
-                        {farmerForm.formState.errors.state && (
+                        {farmerForm.formState.errors.state?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {farmerForm.formState.errors.state.message}
+                            {t(farmerForm.formState.errors.state.message)}
                           </p>
                         )}
                       </div>
@@ -371,9 +370,9 @@ export default function ProfileManagement() {
                           {...farmerForm.register("phoneNumber")}
                           placeholder={t("profile.form.phonePlaceholder")}
                         />
-                        {farmerForm.formState.errors.phoneNumber && (
+                        {farmerForm.formState.errors.phoneNumber?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {farmerForm.formState.errors.phoneNumber.message}
+                            {t(farmerForm.formState.errors.phoneNumber.message)}
                           </p>
                         )}
                       </div>
@@ -387,9 +386,9 @@ export default function ProfileManagement() {
                           {...farmerForm.register("district")}
                           placeholder={t("profile.form.districtPlaceholder")}
                         />
-                        {farmerForm.formState.errors.district && (
+                        {farmerForm.formState.errors.district?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {farmerForm.formState.errors.district.message}
+                            {t(farmerForm.formState.errors.district.message)}
                           </p>
                         )}
                       </div>
@@ -484,9 +483,9 @@ export default function ProfileManagement() {
                           {...buyerForm.register("contactPersonName")}
                           placeholder={t("profile.form.contactPersonPlaceholder")}
                         />
-                        {buyerForm.formState.errors.contactPersonName && (
+                        {buyerForm.formState.errors.contactPersonName?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {buyerForm.formState.errors.contactPersonName.message}
+                            {t(buyerForm.formState.errors.contactPersonName.message)}
                           </p>
                         )}
                       </div>
@@ -500,9 +499,9 @@ export default function ProfileManagement() {
                           {...buyerForm.register("state")}
                           placeholder={t("profile.form.statePlaceholder")}
                         />
-                        {buyerForm.formState.errors.state && (
+                        {buyerForm.formState.errors.state?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {buyerForm.formState.errors.state.message}
+                            {t(buyerForm.formState.errors.state.message)}
                           </p>
                         )}
                       </div>
@@ -567,9 +566,9 @@ export default function ProfileManagement() {
                           {...buyerForm.register("phoneNumber")}
                           placeholder={t("profile.form.phonePlaceholder")}
                         />
-                        {buyerForm.formState.errors.phoneNumber && (
+                        {buyerForm.formState.errors.phoneNumber?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {buyerForm.formState.errors.phoneNumber.message}
+                            {t(buyerForm.formState.errors.phoneNumber.message)}
                           </p>
                         )}
                       </div>
@@ -583,9 +582,9 @@ export default function ProfileManagement() {
                           {...buyerForm.register("district")}
                           placeholder={t("profile.form.districtPlaceholder")}
                         />
-                        {buyerForm.formState.errors.district && (
+                        {buyerForm.formState.errors.district?.message && (
                           <p className="text-sm text-destructive mt-1">
-                            {buyerForm.formState.errors.district.message}
+                            {t(buyerForm.formState.errors.district.message)}
                           </p>
                         )}
                       </div>

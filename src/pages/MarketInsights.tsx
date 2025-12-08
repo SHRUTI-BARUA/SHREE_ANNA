@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, BarChart3, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { useTranslation } from "react-i18next";
 
 // Types
 interface MarketPrice {
@@ -45,6 +46,14 @@ export default function MarketInsights() {
     const [selectedMillet, setSelectedMillet] = useState<string>("all");
     const [isGeneratingPrediction, setIsGeneratingPrediction] = useState<boolean>(false);
     const [prediction, setPrediction] = useState<PredictionResult | null>(null);
+    const { t } = useTranslation();
+
+    const formatMilletType = (value: string) => {
+        const translationKey = `millets.types.${value}`;
+        const translated = t(translationKey);
+        if (translated && translated !== translationKey) return translated;
+        return value.replace(/_/g, " ").toUpperCase();
+    };
 
     // Mock fetch functions
     const { data: marketPrices = [] } = useQuery<MarketPrice[]>({
@@ -96,17 +105,21 @@ export default function MarketInsights() {
                     },
                 ],
                 market_analysis: {
-                    overall_trend: "Prices expected to rise steadily over next 3 months due to export demands.",
-                    key_factors: ["Seasonal patterns", "Government policy support", "Rising health awareness"],
-                    farmer_recommendations: ["Increase storage capacity", "Monitor market demand"],
-                    buyer_recommendations: ["Plan bulk purchase early", "Diversify millet types"],
+                    overall_trend: t("marketInsights.analysis.overallTrend"),
+                    key_factors: t("marketInsights.analysis.keyFactors", { returnObjects: true }) as string[],
+                    farmer_recommendations: t("marketInsights.analysis.farmerRecommendations", {
+                        returnObjects: true,
+                    }) as string[],
+                    buyer_recommendations: t("marketInsights.analysis.buyerRecommendations", {
+                        returnObjects: true,
+                    }) as string[],
                 },
             };
 
             setPrediction(result);
         } catch (err) {
             console.error("Error generating prediction:", err);
-            alert("Error generating prediction");
+            alert(t("marketInsights.alerts.errorGenerating"));
         } finally {
             setIsGeneratingPrediction(false);
         }
@@ -129,11 +142,13 @@ export default function MarketInsights() {
                 {/* Header Section - Shree Anna Theme */}
                 <div className="mb-10 text-center md:text-left">
                     <Badge className="bg-shree-gold text-shree-brown font-bold mb-3 hover:bg-shree-gold">
-                        Market Intelligence
+                        {t("marketInsights.badge")}
                     </Badge>
-                    <h1 className="text-4xl font-serif font-bold text-shree-brown mb-2">Market Insights & Price Predictions</h1>
+                    <h1 className="text-4xl font-serif font-bold text-shree-brown mb-2">
+                        {t("marketInsights.title")}
+                    </h1>
                     <p className="text-gray-600 font-sans max-w-2xl">
-                        AI-powered market analysis and price forecasting based on Mandi data.
+                        {t("marketInsights.subtitle")}
                     </p>
                 </div>
 
@@ -145,18 +160,18 @@ export default function MarketInsights() {
                             <div className="flex flex-col md:flex-row gap-4 items-end">
                                 <div className="flex-1 w-full">
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                        Select Millet Type
+                                        {t("marketInsights.controls.selectLabel")}
                                     </label>
                                     <Select value={selectedMillet} onValueChange={setSelectedMillet}>
                                         <SelectTrigger className="h-12 border-gray-200 bg-gray-50 focus:ring-shree-green">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">All Millets</SelectItem>
-                                            <SelectItem value="foxtail_millet">Foxtail Millet</SelectItem>
-                                            <SelectItem value="pearl_millet">Pearl Millet</SelectItem>
-                                            <SelectItem value="finger_millet">Finger Millet</SelectItem>
-                                            <SelectItem value="little_millet">Little Millet</SelectItem>
+                                            <SelectItem value="all">{t("marketInsights.controls.allMillets")}</SelectItem>
+                                            <SelectItem value="foxtail_millet">{t("millets.types.foxtail_millet")}</SelectItem>
+                                            <SelectItem value="pearl_millet">{t("millets.types.pearl_millet")}</SelectItem>
+                                            <SelectItem value="finger_millet">{t("millets.types.finger_millet")}</SelectItem>
+                                            <SelectItem value="little_millet">{t("millets.types.little_millet")}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -168,11 +183,11 @@ export default function MarketInsights() {
                                 >
                                     {isGeneratingPrediction ? (
                                         <>
-                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing...
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t("marketInsights.controls.analyzing")}
                                         </>
                                     ) : (
                                         <>
-                                            <Sparkles className="w-4 h-4 mr-2" /> Generate Future Prediction
+                                            <Sparkles className="w-4 h-4 mr-2" /> {t("marketInsights.controls.generate")}
                                         </>
                                     )}
                                 </Button>
@@ -185,12 +200,12 @@ export default function MarketInsights() {
                         <CardContent className="p-6 flex flex-col justify-center h-full">
                             <div className="flex items-center gap-2 mb-2 opacity-90">
                                 <BarChart3 className="w-5 h-5" />
-                                <span className="text-sm font-medium">Average Price (Quintal)</span>
+                                <span className="text-sm font-medium">{t("marketInsights.stats.averagePrice")}</span>
                             </div>
                             <p className="text-4xl font-serif font-bold">₹{avgPrice}</p>
                             <div className="flex items-center gap-1 mt-2 text-green-100 text-sm">
                                 <TrendingUp className="w-4 h-4" />
-                                <span>+8.5% vs last month</span>
+                                <span>{t("marketInsights.stats.change")}</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -200,7 +215,10 @@ export default function MarketInsights() {
                 <Card className="mb-8 border-none shadow-lg bg-white">
                     <CardHeader className="border-b border-gray-100 pb-4">
                         <CardTitle className="font-serif text-xl text-shree-brown">
-                            Price History <span className="text-gray-400 font-sans text-sm font-normal ml-2">(Last 30 Days)</span>
+                            {t("marketInsights.chart.title")}{" "}
+                            <span className="text-gray-400 font-sans text-sm font-normal ml-2">
+                                {t("marketInsights.chart.subtitle")}
+                            </span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
@@ -234,7 +252,7 @@ export default function MarketInsights() {
                                     <Line 
                                         type="monotone" 
                                         dataKey="price" 
-                                        name="Price (₹/quintal)"
+                                        name={t("marketInsights.chart.seriesName")}
                                         stroke="hsl(var(--shree-green))" // Theme Green
                                         strokeWidth={3} 
                                         dot={{ fill: 'hsl(var(--shree-green))', r: 4, strokeWidth: 0 }}
@@ -251,37 +269,47 @@ export default function MarketInsights() {
                     <div className="animate-fade-in">
                         <div className="flex items-center gap-2 mb-6">
                             <Sparkles className="w-6 h-6 text-shree-gold" />
-                            <h2 className="text-2xl font-serif font-bold text-shree-brown">AI Forecast Report</h2>
+                            <h2 className="text-2xl font-serif font-bold text-shree-brown">
+                                {t("marketInsights.predictions.heading")}
+                            </h2>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                             {prediction.predictions?.map((pred, index) => (
-                                <Card key={index} className="border-none shadow-md overflow-hidden bg-white">
-                                    <div className="bg-shree-brown p-3 flex justify-between items-center">
-                                        <h3 className="text-white font-serif font-bold pl-2">
-                                            {pred.millet_type.replace(/_/g, " ").toUpperCase()}
-                                        </h3>
-                                        <Badge className={`border-0 ${pred.trend === "upward" ? "bg-shree-green text-white" : "bg-red-500 text-white"}`}>
-                                            {pred.trend.toUpperCase()}
-                                        </Badge>
-                                    </div>
+                                        <Card key={index} className="border-none shadow-md overflow-hidden bg-white">
+                                            <div className="bg-shree-brown p-3 flex justify-between items-center">
+                                                <h3 className="text-white font-serif font-bold pl-2">
+                                                    {formatMilletType(pred.millet_type)}
+                                                </h3>
+                                                <Badge className={`border-0 ${pred.trend === "upward" ? "bg-shree-green text-white" : "bg-red-500 text-white"}`}>
+                                                    {t(`marketInsights.predictions.trend.${pred.trend}`)}
+                                                </Badge>
+                                            </div>
                                     <CardContent className="p-5">
                                         <div className="space-y-4">
                                             <div className="flex justify-between items-center border-b border-dashed border-gray-200 pb-3">
-                                                <span className="text-gray-500 text-sm">Current Price</span>
+                                                <span className="text-gray-500 text-sm">
+                                                    {t("marketInsights.predictions.currentPrice")}
+                                                </span>
                                                 <span className="font-bold text-lg text-gray-800">₹{pred.current_price}</span>
                                             </div>
                                             <div className="grid grid-cols-3 gap-2 text-center">
                                                 <div>
-                                                    <p className="text-xs text-gray-400 mb-1">30 Days</p>
+                                                    <p className="text-xs text-gray-400 mb-1">
+                                                        {t("marketInsights.predictions.days30")}
+                                                    </p>
                                                     <p className="font-bold text-shree-green">₹{pred.predicted_price_30days}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs text-gray-400 mb-1">60 Days</p>
+                                                    <p className="text-xs text-gray-400 mb-1">
+                                                        {t("marketInsights.predictions.days60")}
+                                                    </p>
                                                     <p className="font-bold text-shree-rust">₹{pred.predicted_price_60days}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs text-gray-400 mb-1">90 Days</p>
+                                                    <p className="text-xs text-gray-400 mb-1">
+                                                        {t("marketInsights.predictions.days90")}
+                                                    </p>
                                                     <p className="font-bold text-shree-brown">₹{pred.predicted_price_90days}</p>
                                                 </div>
                                             </div>
@@ -293,19 +321,25 @@ export default function MarketInsights() {
 
                         <Card className="border-none shadow-lg bg-white">
                             <CardHeader className="bg-shree-cream/50 border-b border-gray-100">
-                                <CardTitle className="text-lg font-serif text-shree-brown">Market Analysis & Recommendations</CardTitle>
+                                <CardTitle className="text-lg font-serif text-shree-brown">
+                                    {t("marketInsights.analysis.title")}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent className="p-6">
                                 <div className="space-y-6">
                                     <div>
-                                        <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-2">Overall Trend</h3>
+                                        <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-2">
+                                            {t("marketInsights.analysis.overallTrendLabel")}
+                                        </h3>
                                         <p className="text-lg text-shree-rust font-medium leading-relaxed font-serif">
                                             "{prediction.market_analysis?.overall_trend}"
                                         </p>
                                     </div>
 
                                     <div>
-                                        <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-2">Key Drivers</h3>
+                                        <h3 className="font-bold text-gray-500 uppercase text-xs tracking-wider mb-2">
+                                            {t("marketInsights.analysis.keyDrivers")}
+                                        </h3>
                                         <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                             {prediction.market_analysis?.key_factors?.map((factor, i) => (
                                                 <li key={i} className="text-gray-700 flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-100">
@@ -319,7 +353,7 @@ export default function MarketInsights() {
                                     <div className="grid md:grid-cols-2 gap-6 pt-4">
                                         <div className="bg-green-50/50 p-5 rounded-xl border border-green-100">
                                             <h3 className="font-bold mb-3 text-shree-green flex items-center gap-2">
-                                                <TrendingUp className="w-4 h-4" /> For Farmers
+                                                <TrendingUp className="w-4 h-4" /> {t("marketInsights.analysis.farmersTitle")}
                                             </h3>
                                             <ul className="space-y-2">
                                                 {prediction.market_analysis?.farmer_recommendations?.map((rec, i) => (
@@ -333,7 +367,7 @@ export default function MarketInsights() {
 
                                         <div className="bg-blue-50/50 p-5 rounded-xl border border-blue-100">
                                             <h3 className="font-bold mb-3 text-blue-700 flex items-center gap-2">
-                                                <AlertCircle className="w-4 h-4" /> For Buyers
+                                                <AlertCircle className="w-4 h-4" /> {t("marketInsights.analysis.buyersTitle")}
                                             </h3>
                                             <ul className="space-y-2">
                                                 {prediction.market_analysis?.buyer_recommendations?.map((rec, i) => (

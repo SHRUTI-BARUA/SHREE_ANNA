@@ -28,6 +28,7 @@ import {
 } from "recharts";
 
 import titleImg from "@/assets/title.jpg";
+import { useTranslation } from "react-i18next";
 
 const salesData = [
   { month: "Jan", sales: 4000 },
@@ -43,6 +44,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [hasProfile, setHasProfile] = useState(false);
   const [profileName, setProfileName] = useState("");
+  const { t } = useTranslation();
 
   const { data: profile } = useQuery({
     queryKey: ["user-profile", user?.id],
@@ -82,7 +84,7 @@ export default function Dashboard() {
           <div className="absolute inset-0">
             <img
               src={titleImg}
-              alt="Millet fields"
+              alt={t("traceability.heroTitle")}
               className="w-full h-full object-cover filter brightness-90 saturate-110"
             />
             <div
@@ -97,11 +99,10 @@ export default function Dashboard() {
           <div className="relative py-16 px-4 flex items-center justify-center">
             <div className="max-w-2xl mx-auto bg-black/55 border border-white/15 rounded-3xl px-8 py-10 text-center shadow-2xl backdrop-blur-sm">
               <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
-                Welcome to ShreeAnna Connect!
+                {t("dashboard.setup.heroTitle")}
               </h1>
               <p className="text-base md:text-lg text-neutral-100 mt-3 drop-shadow">
-                Complete your profile to get started with your personalised
-                millet marketplace.
+                {t("dashboard.setup.heroSubtitle")}
               </p>
             </div>
           </div>
@@ -116,10 +117,10 @@ export default function Dashboard() {
                   <Sprout className="w-8 h-8 text-green-600" />
                 </div>
                 <h3 className="text-xl font-bold text-center mb-2">
-                  Farmer / FPO / SHG
+                  {t("dashboard.setup.cards.0.title")}
                 </h3>
                 <p className="text-muted-foreground text-center mb-4">
-                  I want to sell my millet products
+                  {t("dashboard.setup.cards.0.description")}
                 </p>
               </CardContent>
             </Card>
@@ -130,10 +131,10 @@ export default function Dashboard() {
                   <Layers className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="text-xl font-bold text-center mb-2">
-                  Buyer / Processor / Trader
+                  {t("dashboard.setup.cards.1.title")}
                 </h3>
                 <p className="text-muted-foreground text-center mb-4">
-                  I want to buy millets or bulk lots
+                  {t("dashboard.setup.cards.1.description")}
                 </p>
               </CardContent>
             </Card>
@@ -144,10 +145,10 @@ export default function Dashboard() {
                   <User className="w-8 h-8 text-purple-600" />
                 </div>
                 <h3 className="text-xl font-bold text-center mb-2">
-                  Consumer
+                  {t("dashboard.setup.cards.2.title")}
                 </h3>
                 <p className="text-muted-foreground text-center mb-4">
-                  I want to explore millet-based products
+                  {t("dashboard.setup.cards.2.description")}
                 </p>
               </CardContent>
             </Card>
@@ -158,7 +159,7 @@ export default function Dashboard() {
               onClick={() => navigate("/profile")}
               className="bg-gradient-to-r from-amber-500 to-green-600 text-white px-8 py-6 font-semibold rounded-lg shadow-lg"
             >
-              Continue to Profile Setup →
+              {t("dashboard.setup.continue")}
             </Button>
           </div>
         </div>
@@ -173,9 +174,9 @@ export default function Dashboard() {
         {/* Greeting Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            नमस्ते, {profileName}! 👋
+            {t("dashboard.main.greeting", { name: profileName })}
           </h1>
-          <p className="text-muted-foreground text-lg">Your farming dashboard.</p>
+          <p className="text-muted-foreground text-lg">{t("dashboard.main.subtitle")}</p>
         </div>
 
         {/* Key Metrics Cards */}
@@ -186,13 +187,13 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">
-                    Active Products
+                    {t("dashboard.main.metrics.activeProductsTitle")}
                   </p>
                   <p className="text-2xl font-bold">0</p>
                   <div className="flex items-center gap-1 mt-2">
                     <ArrowUp className="w-4 h-4 text-brand-green" />
                     <span className="text-sm text-brand-green">
-                      +12% this month
+                      {t("dashboard.main.metrics.activeProductsChange")}
                     </span>
                   </div>
                 </div>
@@ -209,7 +210,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">
-                    Total Revenue
+                    {t("dashboard.main.metrics.totalRevenueTitle")}
                   </p>
                   <p className="text-2xl font-bold">₹0</p>
                 </div>
@@ -226,7 +227,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">
-                    Pending Orders
+                    {t("dashboard.main.metrics.pendingOrdersTitle")}
                   </p>
                   <p className="text-2xl font-bold">0</p>
                 </div>
@@ -243,13 +244,17 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">
-                    Market Trend
+                    {t("dashboard.main.metrics.marketTrendTitle")}
                   </p>
                   <div className="flex items-center gap-1">
                     <ArrowUp className="w-4 h-4 text-brand-green" />
-                    <p className="text-2xl font-bold text-brand-green">+8.5%</p>
+                    <p className="text-2xl font-bold text-brand-green">
+                      {t("dashboard.main.metrics.marketTrendChange")}
+                    </p>
                   </div>
-                  <p className="text-sm text-brand-green mt-1">Prices rising</p>
+                  <p className="text-sm text-brand-green mt-1">
+                    {t("dashboard.main.metrics.marketTrendStatus")}
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-purple-600" />
@@ -264,7 +269,7 @@ export default function Dashboard() {
           {/* Sales Trend */}
           <Card>
             <CardHeader>
-              <CardTitle>Sales Trend</CardTitle>
+              <CardTitle>{t("dashboard.main.salesTrendTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -303,11 +308,11 @@ export default function Dashboard() {
           {/* Millet Types Distribution */}
           <Card>
             <CardHeader>
-              <CardTitle>Millet Types Distribution</CardTitle>
+              <CardTitle>{t("dashboard.main.milletDistributionTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                <p>Chart placeholder</p>
+                <p>{t("dashboard.main.chartPlaceholder")}</p>
               </div>
             </CardContent>
           </Card>
@@ -316,12 +321,12 @@ export default function Dashboard() {
         {/* Recent Orders */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
+            <CardTitle>{t("dashboard.main.recentOrdersTitle")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center py-12">
               <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4 opacity-50" />
-              <p className="text-muted-foreground">No recent orders</p>
+              <p className="text-muted-foreground">{t("dashboard.main.recentOrdersEmpty")}</p>
             </div>
           </CardContent>
         </Card>
@@ -333,21 +338,21 @@ export default function Dashboard() {
             className="bg-brand-orange hover:bg-brand-orange/90 text-white px-6 py-3 text-base font-semibold rounded-lg shadow-lg transition-opacity"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Add New Product
+            {t("dashboard.main.actions.addProduct")}
           </Button>
           <Button
             onClick={() => navigate("/marketplace")}
             className="bg-brand-green hover:bg-brand-green/90 text-white px-6 py-3 text-base font-semibold rounded-lg shadow-lg transition-opacity"
           >
             <ShoppingCart className="w-5 h-5 mr-2" />
-            Browse Marketplace
+            {t("dashboard.main.actions.browseMarketplace")}
           </Button>
           <Button
             onClick={() => navigate("/market-insights")}
             className="bg-brand-blue hover:bg-brand-blue/90 text-white px-6 py-3 text-base font-semibold rounded-lg shadow-lg transition-opacity"
           >
             <LineChartIcon className="w-5 h-5 mr-2" />
-            Market Insights
+            {t("dashboard.main.actions.marketInsights")}
           </Button>
         </div>
       </div>

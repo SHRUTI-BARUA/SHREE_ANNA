@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wheat } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Recipes from "./Recipes";
 import HealthBenefits from "./HealthBenefits";
+import { useTranslation } from "react-i18next";
 
 // Images
 import foxtailImg from "../assets/foxtail.jpg";
@@ -116,9 +117,12 @@ const milletTypes = [
 ];
 
 export default function MilletInfo() {
-  const [language, setLanguage] = useState(() => {
-    return localStorage.getItem("preferredLanguage") || "english";
-  });
+  const { i18n } = useTranslation();
+  const [language, setLanguage] = useState(() => (i18n.language === "hi" ? "hindi" : "english"));
+
+  useEffect(() => {
+    setLanguage(i18n.language === "hi" ? "hindi" : "english");
+  }, [i18n.language]);
 
   const t = (en, hi, ta, kn, te) => {
     const translations = { english: en, hindi: hi, tamil: ta, kannada: kn, telugu: te };
@@ -146,11 +150,17 @@ export default function MilletInfo() {
         </div>
 
         <Tabs defaultValue="types" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="types">{t("Millet Types", "श्री अन्न प्रकार", "தினை வகைகள்", "ಶ್ರೀಧಾನ್ಯ ಪ್ರಕಾರಗಳು", "రకాలు")}</TabsTrigger>
-            <TabsTrigger value="benefits">{t("Health Benefits", "स्वास्थ्य लाभ", "ஆரோக்கிய நன்மைகள்", "ಆರೋಗ್ಯ ಪ್ರಯೋಜನಗಳು", "ఆరోగ్య లాభాలు")}</TabsTrigger>
-            <TabsTrigger value="recipes">{t("Recipes", "व्यंजन", "சமையல் குறிப்புகள்", "ಪಾಕವಿಧಾನಗಳು", "వంటకాలు")}</TabsTrigger>
-          </TabsList>
+        <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsTrigger value="types">
+            {t("Millet Types", "श्री अन्न प्रकार", "தினை வகைகள்", "ಶ್ರೀಧಾನ್ಯ ಪ್ರಕಾರಗಳು", "రకాలు")}
+          </TabsTrigger>
+          <TabsTrigger value="benefits">
+            {t("Health Benefits", "स्वास्थ्य लाभ", "ஆரோக்கிய நன்மைகள்", "ಆರೋಗ್ಯ ಪ್ರಯೋಜನಗಳು", "ఆరోగ్య లాభాలు")}
+          </TabsTrigger>
+          <TabsTrigger value="recipes">
+            {t("Recipes", "व्यंजन", "சமையல் குறிப்புகள்", "ಪಾಕವಿಧಾನಗಳು", "వంటకాలు")}
+          </TabsTrigger>
+        </TabsList>
 
           <TabsContent value="types">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

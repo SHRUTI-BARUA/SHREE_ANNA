@@ -315,6 +315,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Landmark, CheckCircle, ExternalLink } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Scheme {
   id: string;
@@ -333,6 +334,7 @@ interface Scheme {
 export default function GovernmentSchemes() {
   const [schemes, setSchemes] = useState<Scheme[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchSchemes() {
@@ -374,15 +376,15 @@ export default function GovernmentSchemes() {
           </div>
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Government Schemes & Subsidies
+              {t("governmentSchemes.title")}
             </h1>
-            <p className="text-lg text-gray-600">सरकारी योजनाएं और सब्सिडी</p>
+            <p className="text-lg text-gray-600">{t("governmentSchemes.subtitle")}</p>
           </div>
         </div>
 
         {/* Search */}
         <Input
-          placeholder="Search schemes by name, category, or description..."
+          placeholder={t("governmentSchemes.searchPlaceholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="mb-8 h-12"
@@ -393,25 +395,25 @@ export default function GovernmentSchemes() {
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-orange-600">{schemes.length}</p>
-              <p className="text-sm text-gray-600">Total Schemes</p>
+              <p className="text-sm text-gray-600">{t("governmentSchemes.stats.totalSchemes")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-green-600">{categories.length}</p>
-              <p className="text-sm text-gray-600">Categories</p>
+              <p className="text-sm text-gray-600">{t("governmentSchemes.stats.categories")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-blue-600">₹1L Cr+</p>
-              <p className="text-sm text-gray-600">Total Allocation</p>
+              <p className="text-sm text-gray-600">{t("governmentSchemes.stats.totalAllocation")}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-purple-600">100%</p>
-              <p className="text-sm text-gray-600">Active Schemes</p>
+              <p className="text-sm text-gray-600">{t("governmentSchemes.stats.activeSchemes")}</p>
             </CardContent>
           </Card>
         </div>
@@ -445,7 +447,9 @@ export default function GovernmentSchemes() {
 
                 {scheme.benefits?.length > 0 && (
                   <div className="mb-4">
-                    <h4 className="font-semibold text-sm text-gray-700 mb-2">Key Benefits:</h4>
+                    <h4 className="font-semibold text-sm text-gray-700 mb-2">
+                      {t("governmentSchemes.card.keyBenefits")}
+                    </h4>
                     <ul className="space-y-1">
                       {scheme.benefits.map((benefit, i) => (
                         <li key={i} className="text-sm text-gray-600 flex gap-2">
@@ -459,14 +463,14 @@ export default function GovernmentSchemes() {
 
                 <div className="mb-4 p-3 bg-blue-50 rounded-lg">
                   <p className="text-sm">
-                    <strong>Eligibility:</strong>{" "}
+                    <strong>{t("governmentSchemes.card.eligibility")}</strong>{" "}
                     {Array.isArray(scheme.eligibility)
                       ? scheme.eligibility.join(", ")
                       : scheme.eligibility}
                   </p>
                   {scheme.ministry && (
                     <p className="text-xs text-gray-600 mt-1">
-                      <strong>Ministry:</strong> {scheme.ministry}
+                      <strong>{t("governmentSchemes.card.ministry")}</strong> {scheme.ministry}
                     </p>
                   )}
                 </div>
@@ -481,7 +485,7 @@ export default function GovernmentSchemes() {
                     >
                       <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 w-full flex items-center justify-center">
                         <ExternalLink className="w-4 h-4 mr-2" />
-                        Apply Online
+                        {t("governmentSchemes.card.applyOnline")}
                       </Button>
                     </a>
                   ) : (
@@ -489,7 +493,7 @@ export default function GovernmentSchemes() {
                       disabled
                       className="bg-gray-300 cursor-not-allowed w-full flex items-center justify-center"
                     >
-                      Apply Online
+                      {t("governmentSchemes.card.applyOnline")}
                     </Button>
                   )}
                 </div>

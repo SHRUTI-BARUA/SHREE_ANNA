@@ -1,6 +1,7 @@
 // src/pages/Landing.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // local images
 import heroImage from "@/assets/hero-millets.jpg";
@@ -35,88 +36,34 @@ type Benefit = {
   icon: LucideIcon;
 };
 
-const platformFeatures: Feature[] = [
-  {
-    title: "Online Trading",
-    description:
-      "Digital millet marketplace connecting farmers, FPOs and buyers directly.",
-    icon: BarChart3,
-  },
-  {
-    title: "Fair Pricing",
-    description:
-      "Live price intelligence so farmers never undersell their harvest.",
-    icon: Scale,
-  },
-  {
-    title: "Quality Certification",
-    description:
-      "Traceable, certified lots with confidence for consumers and exporters.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Logistics Support",
-    description:
-      "Integrated logistics and digital payments for smoother movement of grain.",
-    icon: Truck,
-  },
-  {
-    title: "Multilingual Access",
-    description:
-      "Interfaces and help in Indian languages for easier farmer onboarding.",
-    icon: Users,
-  },
-  {
-    title: "Millet Education",
-    description:
-      "Knowledge on cultivation, nutrition, recipes and value addition.",
-    icon: Leaf,
-  },
-  {
-    title: "Connect Communities",
-    description:
-      "Building networks across farmers, SHGs, processors and retailers.",
-    icon: Globe2,
-  },
-  {
-    title: "Government Schemes",
-    description:
-      "Awareness and discovery of relevant millet-support schemes.",
-    icon: Wheat,
-  },
-];
-
-const benefits: Benefit[] = [
-  {
-    title: "Nutri-cereals",
-    description:
-      "Naturally rich in protein, fibre and micronutrients like iron and calcium.",
-    icon: Leaf,
-  },
-  {
-    title: "Resilient & Sustainable",
-    description:
-      "Millets grow in dry, tough climates with far less water than many crops.",
-    icon: Globe2,
-  },
-  {
-    title: "Health & Inclusion",
-    description:
-      "Low glycaemic index, gluten-free options and diverse traditional varieties.",
-    icon: ShieldCheck,
-  },
-];
-
-const missions: MissionItem[] = [
-  { title: "Empower Farmers", icon: Users },
-  { title: "Remove Middlemen", icon: Scale },
-  { title: "Ensure Fair Trade", icon: BarChart3 },
-  { title: "Create Transparent Marketplace", icon: ShieldCheck },
-  { title: "Strengthen Rural Economy", icon: Truck },
-  { title: "Promote Sustainable Agriculture", icon: Leaf },
-];
-
 const Landing: React.FC = () => {
+  const { t } = useTranslation();
+
+  const featureIcons = [BarChart3, Scale, ShieldCheck, Truck, Users, Leaf, Globe2, Wheat];
+  const missionIcons = [Users, Scale, BarChart3, ShieldCheck, Truck, Leaf];
+  const benefitIcons = [Leaf, Globe2, ShieldCheck];
+
+  const translatedFeatures = (t("landing.features", { returnObjects: true }) as Feature[]).map(
+    (feature, index) => ({
+      ...feature,
+      icon: featureIcons[index] ?? BarChart3,
+    })
+  );
+
+  const translatedBenefits = (t("landing.benefits.items", { returnObjects: true }) as Benefit[]).map(
+    (benefit, index) => ({
+      ...benefit,
+      icon: benefitIcons[index] ?? Leaf,
+    })
+  );
+
+  const translatedMissions = (t("landing.aim.cards", { returnObjects: true }) as MissionItem[]).map(
+    (mission, index) => ({
+      ...mission,
+      icon: missionIcons[index] ?? Users,
+    })
+  );
+
   return (
     <div className="min-h-screen font-[Inter] bg-white text-neutral-900">
       {/* ------------------------ TOP NAV ------------------------ */}
@@ -124,20 +71,20 @@ const Landing: React.FC = () => {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 text-sm">
           <div className="flex items-center gap-2 font-bold tracking-wide text-amber-400 text-lg">
              <Wheat className="h-5 w-5 text-amber-400" />
-                ShreeAnna Connect
+                {t("landing.brand")}
            </div>
 
 
           <nav className="flex items-center gap-4">
             <Link to="/login">
               <button className="rounded-full border border-amber-500 px-4 py-1.5 text-xs font-semibold text-amber-200 hover:bg-amber-50/10 transition">
-                Sign In
+                {t("landing.nav.signIn")}
               </button>
             </Link>
 
             <Link to="/signup">
               <button className="rounded-full bg-amber-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 transition">
-                Sign Up
+                {t("landing.nav.signUp")}
               </button>
             </Link>
           </nav>
@@ -161,29 +108,29 @@ const Landing: React.FC = () => {
           {/* --- Left Card : Glass Text --- */}
           <div className="max-w-xl rounded-3xl bg-black/30 backdrop-blur-md border border-white/20 shadow-2xl p-8">
             <p className="text-xs font-semibold uppercase tracking-widest text-amber-200 mb-2">
-              Celebrating India’s Millet Heritage
+              {t("landing.hero.badge")}
             </p>
 
             <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight drop-shadow mb-4">
-              Discover <br />
-              ShreeAnna <br />
-              Connect
+              {t("landing.hero.title.line1")} <br />
+              {t("landing.hero.title.line2")} <br />
+              {t("landing.hero.title.line3")}
             </h1>
 
             <p className="text-sm text-neutral-300 leading-relaxed font-semibold">
-               भारत के अन्नदाता से, भारत के परिवार तक।
+               {t("landing.hero.tagline")}
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/signup">
                 <button className="rounded-full bg-amber-500 px-5 py-2 text-xs md:text-sm font-semibold text-white shadow-lg hover:bg-amber-600 transition">
-                  Get Started
+                  {t("landing.hero.ctaPrimary")}
                 </button>
               </Link>
 
               <Link to="/login">
                 <button className="rounded-full border border-amber-200/80 px-5 py-2 text-xs md:text-sm font-semibold text-amber-100 hover:bg-white/10 transition">
-                  I already have an account
+                  {t("landing.hero.ctaSecondary")}
                 </button>
               </Link>
             </div>
@@ -193,11 +140,10 @@ const Landing: React.FC = () => {
           <div className="md:flex-1 flex justify-center md:justify-end">
             <div className="rounded-3xl bg-white/90 backdrop-blur-sm shadow-xl px-6 py-4 max-w-xs text-sm text-neutral-800">
               <h3 className="font-semibold text-amber-800 mb-2">
-                Did You Know?
+                {t("landing.hero.factTitle")}
               </h3>
               <p className="leading-relaxed">
-                India is one of the world’s largest millet producers, contributing
-                significantly to global food security and sustainable agriculture.
+                {t("landing.hero.factDescription")}
               </p>
             </div>
           </div>
@@ -211,7 +157,7 @@ const Landing: React.FC = () => {
             <div className="overflow-hidden rounded-3xl shadow-xl bg-amber-200 group max-w-md">
               <img
                 src={aboutImage}
-                alt="About ShreeAnna"
+                alt={t("landing.about.imageAlt")}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </div>
@@ -219,21 +165,13 @@ const Landing: React.FC = () => {
 
           <div className="flex-1">
             <h2 className="text-3xl font-extrabold text-amber-800 mb-4">
-              About ShreeAnna Connect
+              {t("landing.about.title")}
             </h2>
             <p className="text-sm leading-relaxed text-neutral-800">
-              ShreeAnna Connect is a multilingual digital platform designed to
-              strengthen India&apos;s millet ecosystem by directly connecting
-              farmers, FPOs, SHGs, processors, traders and consumers. The
-              platform removes middlemen and enables direct market access
-              through transparent transactions, quality certification, real-time
-              pricing, online trading, digital payments and logistics support.
+              {t("landing.about.description1")}
             </p>
             <p className="mt-3 text-sm leading-relaxed text-neutral-800">
-              By promoting millet-based nutrition, supporting rural livelihoods
-              and creating a fair marketplace, ShreeAnna Connect aims to
-              preserve India&apos;s traditional grains while building a
-              sustainable and healthier future for all.
+              {t("landing.about.description2")}
             </p>
           </div>
         </div>
@@ -243,16 +181,15 @@ const Landing: React.FC = () => {
       <section className="bg-white py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-3 text-center text-3xl font-extrabold text-amber-800">
-            What are ShreeAnna? <span className="text-red-700">(श्रीअन्ना)</span>
+            {t("landing.what.title")}{" "}
+            <span className="text-red-700">{t("landing.what.titleSuffix")}</span>
           </h2>
           <p className="text-center text-xs md:text-sm max-w-3xl mx-auto text-neutral-700 mb-10">
-            “ShreeAnna” celebrates India’s millets – nutrient-dense, climate-smart
-            grains that support farmer incomes, resilient agriculture and
-            healthier plates across the country.
+            {t("landing.what.subtitle")}
           </p>
 
           <div className="grid gap-6 sm:grid-cols-3">
-            {benefits.map((b) => (
+            {translatedBenefits.map((b) => (
               <article
                 key={b.title}
                 className="group rounded-3xl bg-amber-50/70 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 p-5"
@@ -278,11 +215,11 @@ const Landing: React.FC = () => {
       <section className="bg-gradient-to-b from-amber-50 to-yellow-100 py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-10 text-center text-3xl font-extrabold text-amber-800">
-            Platform Features
+            {t("landing.featuresTitle")}
           </h2>
 
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
-            {platformFeatures.map((feature) => (
+            {translatedFeatures.map((feature) => (
               <article
                 key={feature.title}
                 className="group flex h-full flex-col rounded-3xl bg-white/90 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 p-4"
@@ -308,11 +245,11 @@ const Landing: React.FC = () => {
       <section className="bg-gradient-to-b from-orange-700 to-amber-600 py-16 md:py-20 text-white">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="mb-10 text-center text-3xl font-extrabold">
-            Our Aim
+            {t("landing.aim.title")}
           </h2>
 
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-            {missions.map((m) => (
+            {translatedMissions.map((m) => (
               <article
                 key={m.title}
                 className="group flex flex-col rounded-3xl bg-white/95 text-neutral-900 shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 p-4"
@@ -326,8 +263,7 @@ const Landing: React.FC = () => {
                   </h3>
                 </div>
                 <p className="text-xs text-neutral-700 leading-relaxed flex-1">
-                  ShreeAnna Connect works to make this goal real through
-                  digital tools, fair markets and stronger farmer linkages.
+                  {t("landing.aim.cardDescription")}
                 </p>
               </article>
             ))}
@@ -340,18 +276,16 @@ const Landing: React.FC = () => {
         <div className="mx-auto max-w-6xl px-4 flex flex-col md:flex-row justify-between gap-6">
           <div>
             <h3 className="text-white text-sm font-semibold mb-2">
-              Contact Us
+              {t("landing.footer.contactTitle")}
             </h3>
-            <p>info@shreeanna.gov.in</p>
-            <p>+91 11 2345 6789</p>
-            <p> Ministry Of Agriculture, FoodTech & Rural Development, India
-
-            </p>
+            <p>{t("landing.footer.email")}</p>
+            <p>{t("landing.footer.phone")}</p>
+            <p>{t("landing.footer.address")}</p>
           </div>
 
           <div>
             <h3 className="text-white text-sm font-semibold mb-2">
-              Follow Us
+              {t("landing.footer.followTitle")}
             </h3>
             <div className="flex gap-3">
               <span className="h-7 w-7 rounded-full bg-neutral-800" />
@@ -363,7 +297,7 @@ const Landing: React.FC = () => {
         </div>
 
         <div className="mt-6 border-t border-neutral-800 text-center pt-4 text-[11px] text-neutral-500">
-          © {new Date().getFullYear()} ShreeAnna Connect. All rights reserved.
+          {t("landing.footer.copyright", { year: new Date().getFullYear() })}
         </div>
       </footer>
     </div>

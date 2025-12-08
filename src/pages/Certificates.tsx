@@ -4,6 +4,7 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Award, CheckCircle, Calendar, FileText } from "lucide-react";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 // TypeScript types
 type ParametersTested = {
@@ -24,6 +25,7 @@ type Certificate = {
 };
 
 export default function Certificates() {
+  const { t } = useTranslation();
   // TODO: Replace with Supabase query when ready
   // Fetch certificates using React Query
   const { data: certificates = [], isLoading } = useQuery<Certificate[]>({
@@ -40,8 +42,8 @@ export default function Certificates() {
       <div className="max-w-7xl mx-auto">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Quality Certificates</h1>
-          <p className="text-gray-600">View quality certifications and traceability records</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t("certificates.title")}</h1>
+          <p className="text-gray-600">{t("certificates.subtitle")}</p>
         </div>
 
         {/* Loading State */}
@@ -58,8 +60,10 @@ export default function Certificates() {
           // Empty State
           <div className="text-center py-20">
             <Award className="w-24 h-24 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-2xl font-semibold text-gray-700 mb-2">No certificates yet</h3>
-            <p className="text-gray-500">Quality certificates will appear here</p>
+            <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+              {t("certificates.emptyTitle")}
+            </h3>
+            <p className="text-gray-500">{t("certificates.emptySubtitle")}</p>
           </div>
         ) : (
           // Certificates Grid
@@ -69,14 +73,14 @@ export default function Certificates() {
                 <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white">
                   <CardTitle className="flex items-center gap-2">
                     <Award className="w-5 h-5" />
-                    Certificate #{cert.certificate_number}
+                    {t("certificates.title")} #{cert.certificate_number}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-3">
                     {/* Grade */}
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Grade</span>
+                      <span className="text-sm text-gray-600">{t("certificates.grade")}</span>
                       <Badge className="bg-amber-100 text-amber-800">
                         {cert.grade_assigned?.toUpperCase() || "N/A"}
                       </Badge>
@@ -84,7 +88,7 @@ export default function Certificates() {
 
                     {/* Testing Date */}
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Testing Date</span>
+                      <span className="text-sm text-gray-600">{t("certificates.testingDate")}</span>
                       <div className="flex items-center gap-1 text-sm">
                         <Calendar className="w-3 h-3" />
                         {cert.testing_date ? format(new Date(cert.testing_date), "MMM d, yyyy") : "N/A"}
@@ -93,7 +97,7 @@ export default function Certificates() {
 
                     {/* Testing Agency */}
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Testing Agency</span>
+                      <span className="text-sm text-gray-600">{t("certificates.testingAgency")}</span>
                       <span className="text-sm font-semibold">{cert.testing_agency || "N/A"}</span>
                     </div>
 
@@ -101,18 +105,18 @@ export default function Certificates() {
                     {cert.organic_certified && (
                       <div className="flex items-center gap-2 text-green-600">
                         <CheckCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">Organic Certified</span>
+                        <span className="text-sm font-medium">{t("certificates.organicCertified")}</span>
                       </div>
                     )}
 
                     {/* Parameters Tested */}
                     {cert.parameters_tested && (
                       <div className="pt-3 border-t">
-                        <p className="text-xs text-gray-500 mb-2">Test Parameters:</p>
+                        <p className="text-xs text-gray-500 mb-2">{t("certificates.parameters")}</p>
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           {cert.parameters_tested.moisture_content !== undefined && (
                             <div>
-                              <span className="text-gray-600">Moisture:</span>
+                              <span className="text-gray-600">{t("certificates.moisture")}</span>
                               <span className="ml-1 font-semibold">
                                 {cert.parameters_tested.moisture_content}%
                               </span>
@@ -120,7 +124,7 @@ export default function Certificates() {
                           )}
                           {cert.parameters_tested.protein_content !== undefined && (
                             <div>
-                              <span className="text-gray-600">Protein:</span>
+                              <span className="text-gray-600">{t("certificates.protein")}</span>
                               <span className="ml-1 font-semibold">
                                 {cert.parameters_tested.protein_content}%
                               </span>
@@ -133,7 +137,7 @@ export default function Certificates() {
                     {/* Blockchain Hash */}
                     {cert.blockchain_hash && (
                       <div className="pt-3 border-t">
-                        <p className="text-xs text-gray-500 mb-1">Blockchain Verified</p>
+                        <p className="text-xs text-gray-500 mb-1">{t("certificates.blockchain")}</p>
                         <p className="text-xs font-mono text-gray-700 truncate">
                           {cert.blockchain_hash}
                         </p>
@@ -149,7 +153,7 @@ export default function Certificates() {
                         className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm mt-4"
                       >
                         <FileText className="w-4 h-4" />
-                        View Certificate
+                        {t("certificates.viewCertificate")}
                       </a>
                     )}
                   </div>
