@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, User, Save } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // Farmer Profile Schema
 const farmerProfileSchema = z.object({
@@ -54,6 +55,7 @@ type BuyerProfileFormData = z.infer<typeof buyerProfileSchema>;
 
 export default function ProfileManagement() {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"farmer" | "buyer">("farmer");
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -163,13 +165,15 @@ export default function ProfileManagement() {
       }
 
       toast({
-        title: "Profile saved!",
-        description: "Your farmer profile has been saved successfully.",
+        title: t("profile.toast.savedTitle"),
+        description: t("profile.toast.farmerSavedDesc"),
       });
-    } catch (error: any) {
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : t("profile.toast.errorMessage");
       toast({
-        title: "Error",
-        description: error.message || "Failed to save profile. Please try again.",
+        title: t("profile.toast.errorTitle"),
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -206,13 +210,15 @@ export default function ProfileManagement() {
       }
 
       toast({
-        title: "Profile saved!",
-        description: "Your buyer profile has been saved successfully.",
+        title: t("profile.toast.savedTitle"),
+        description: t("profile.toast.buyerSavedDesc"),
       });
-    } catch (error: any) {
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : t("profile.toast.errorMessage");
       toast({
-        title: "Error",
-        description: error.message || "Failed to save profile. Please try again.",
+        title: t("profile.toast.errorTitle"),
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -233,15 +239,15 @@ export default function ProfileManagement() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Profile Management</h1>
-          <p className="text-muted-foreground">Complete your profile to start using the platform.</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{t("profile.title")}</h1>
+          <p className="text-muted-foreground">{t("profile.subtitle")}</p>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "farmer" | "buyer")}>
           <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="farmer">Farmer/FPO/SHG Profile</TabsTrigger>
-            <TabsTrigger value="buyer">Buyer/Consumer Profile</TabsTrigger>
+            <TabsTrigger value="farmer">{t("profile.tabs.farmer")}</TabsTrigger>
+            <TabsTrigger value="buyer">{t("profile.tabs.buyer")}</TabsTrigger>
           </TabsList>
 
           {/* Farmer Profile Form */}
@@ -250,7 +256,7 @@ export default function ProfileManagement() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5" />
-                  Farmer Profile
+                  {t("profile.farmerTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -260,7 +266,7 @@ export default function ProfileManagement() {
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="profileType">
-                          Profile Type <span className="text-destructive">*</span>
+                          {t("profile.form.profileTypeLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Controller
                           name="profileType"
@@ -268,11 +274,11 @@ export default function ProfileManagement() {
                           render={({ field }) => (
                             <Select value={field.value} onValueChange={field.onChange}>
                               <SelectTrigger id="profileType">
-                                <SelectValue placeholder="Select profile type" />
+                                <SelectValue placeholder={t("profile.form.profileTypePlaceholder")} />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="Individual Farmer">Individual Farmer</SelectItem>
-                                <SelectItem value="FPO/SHG">FPO/SHG</SelectItem>
+                                <SelectItem value="Individual Farmer">{t("profile.form.profileTypeIndividual")}</SelectItem>
+                                <SelectItem value="FPO/SHG">{t("profile.form.profileTypeFpo")}</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
@@ -286,12 +292,12 @@ export default function ProfileManagement() {
 
                       <div>
                         <Label htmlFor="contactPersonName">
-                          Contact Person Name <span className="text-destructive">*</span>
+                          {t("profile.form.contactPersonLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="contactPersonName"
                           {...farmerForm.register("contactPersonName")}
-                          placeholder="Enter contact person name"
+                          placeholder={t("profile.form.contactPersonPlaceholder")}
                         />
                         {farmerForm.formState.errors.contactPersonName && (
                           <p className="text-sm text-destructive mt-1">
@@ -302,12 +308,12 @@ export default function ProfileManagement() {
 
                       <div>
                         <Label htmlFor="state">
-                          State <span className="text-destructive">*</span>
+                          {t("profile.form.stateLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="state"
                           {...farmerForm.register("state")}
-                          placeholder="Enter state"
+                          placeholder={t("profile.form.statePlaceholder")}
                         />
                         {farmerForm.formState.errors.state && (
                           <p className="text-sm text-destructive mt-1">
@@ -317,16 +323,16 @@ export default function ProfileManagement() {
                       </div>
 
                       <div>
-                        <Label htmlFor="village">Village</Label>
+                        <Label htmlFor="village">{t("profile.form.villageLabel")}</Label>
                         <Input
                           id="village"
                           {...farmerForm.register("village")}
-                          placeholder="Enter village"
+                          placeholder={t("profile.form.villagePlaceholder")}
                         />
                       </div>
 
                       <div>
-                        <Label htmlFor="farmSizeAcres">Farm Size (acres)</Label>
+                        <Label htmlFor="farmSizeAcres">{t("profile.form.farmSizeLabel")}</Label>
                         <Input
                           id="farmSizeAcres"
                           type="number"
@@ -336,11 +342,11 @@ export default function ProfileManagement() {
                       </div>
 
                       <div>
-                        <Label htmlFor="bankAccountNumber">Bank Account Number</Label>
+                        <Label htmlFor="bankAccountNumber">{t("profile.form.bankAccountLabel")}</Label>
                         <Input
                           id="bankAccountNumber"
                           {...farmerForm.register("bankAccountNumber")}
-                          placeholder="Enter bank account number"
+                          placeholder={t("profile.form.bankAccountPlaceholder")}
                         />
                       </div>
                     </div>
@@ -348,22 +354,22 @@ export default function ProfileManagement() {
                     {/* Right Column */}
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="organizationName">Organization Name (if FPO/SHG)</Label>
+                        <Label htmlFor="organizationName">{t("profile.form.organizationLabel")}</Label>
                         <Input
                           id="organizationName"
                           {...farmerForm.register("organizationName")}
-                          placeholder="Enter organization name"
+                          placeholder={t("profile.form.organizationPlaceholder")}
                         />
                       </div>
 
                       <div>
                         <Label htmlFor="phoneNumber">
-                          Phone Number <span className="text-destructive">*</span>
+                          {t("profile.form.phoneLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="phoneNumber"
                           {...farmerForm.register("phoneNumber")}
-                          placeholder="Enter phone number"
+                          placeholder={t("profile.form.phonePlaceholder")}
                         />
                         {farmerForm.formState.errors.phoneNumber && (
                           <p className="text-sm text-destructive mt-1">
@@ -374,12 +380,12 @@ export default function ProfileManagement() {
 
                       <div>
                         <Label htmlFor="district">
-                          District <span className="text-destructive">*</span>
+                          {t("profile.form.districtLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="district"
                           {...farmerForm.register("district")}
-                          placeholder="Enter district"
+                          placeholder={t("profile.form.districtPlaceholder")}
                         />
                         {farmerForm.formState.errors.district && (
                           <p className="text-sm text-destructive mt-1">
@@ -389,31 +395,31 @@ export default function ProfileManagement() {
                       </div>
 
                       <div>
-                        <Label htmlFor="pincode">Pincode</Label>
+                        <Label htmlFor="pincode">{t("profile.form.pincodeLabel")}</Label>
                         <Input
                           id="pincode"
                           {...farmerForm.register("pincode")}
-                          placeholder="Enter pincode"
+                          placeholder={t("profile.form.pincodePlaceholder")}
                         />
                       </div>
 
                       <div>
-                        <Label htmlFor="preferredLanguage">Preferred Language</Label>
+                        <Label htmlFor="preferredLanguage">{t("profile.form.preferredLanguageLabel")}</Label>
                         <Controller
                           name="preferredLanguage"
                           control={farmerForm.control}
                           render={({ field }) => (
                             <Select value={field.value} onValueChange={field.onChange}>
                               <SelectTrigger id="preferredLanguage">
-                                <SelectValue placeholder="Select language" />
+                                <SelectValue placeholder={t("profile.form.preferredLanguagePlaceholder")} />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="English">English</SelectItem>
-                                <SelectItem value="Hindi">Hindi</SelectItem>
-                                <SelectItem value="Malayalam">Malayalam</SelectItem>
-                                <SelectItem value="Tamil">Tamil</SelectItem>
-                                <SelectItem value="Telugu">Telugu</SelectItem>
-                                <SelectItem value="Kannada">Kannada</SelectItem>
+                                <SelectItem value="English">{t("profile.form.languageOptionEnglish")}</SelectItem>
+                                <SelectItem value="Hindi">{t("profile.form.languageOptionHindi")}</SelectItem>
+                                <SelectItem value="Malayalam">{t("profile.form.languageOptionMalayalam")}</SelectItem>
+                                <SelectItem value="Tamil">{t("profile.form.languageOptionTamil")}</SelectItem>
+                                <SelectItem value="Telugu">{t("profile.form.languageOptionTelugu")}</SelectItem>
+                                <SelectItem value="Kannada">{t("profile.form.languageOptionKannada")}</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
@@ -421,11 +427,11 @@ export default function ProfileManagement() {
                       </div>
 
                       <div>
-                        <Label htmlFor="ifscCode">IFSC Code</Label>
+                        <Label htmlFor="ifscCode">{t("profile.form.ifscLabel")}</Label>
                         <Input
                           id="ifscCode"
                           {...farmerForm.register("ifscCode")}
-                          placeholder="Enter IFSC code"
+                          placeholder={t("profile.form.ifscPlaceholder")}
                         />
                       </div>
                     </div>
@@ -440,12 +446,12 @@ export default function ProfileManagement() {
                       {isLoading ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Saving...
+                          {t("profile.form.saving")}
                         </>
                       ) : (
                         <>
                           <Save className="w-4 h-4 mr-2" />
-                          Save Farmer Profile
+                          {t("profile.form.saveFarmer")}
                         </>
                       )}
                     </Button>
@@ -461,7 +467,7 @@ export default function ProfileManagement() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5" />
-                  Buyer Profile
+                  {t("profile.buyerTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -471,12 +477,12 @@ export default function ProfileManagement() {
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="buyerContactPersonName">
-                          Contact Person Name <span className="text-destructive">*</span>
+                          {t("profile.form.contactPersonLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="buyerContactPersonName"
                           {...buyerForm.register("contactPersonName")}
-                          placeholder="Enter contact person name"
+                          placeholder={t("profile.form.contactPersonPlaceholder")}
                         />
                         {buyerForm.formState.errors.contactPersonName && (
                           <p className="text-sm text-destructive mt-1">
@@ -487,12 +493,12 @@ export default function ProfileManagement() {
 
                       <div>
                         <Label htmlFor="buyerState">
-                          State <span className="text-destructive">*</span>
+                          {t("profile.form.stateLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="buyerState"
                           {...buyerForm.register("state")}
-                          placeholder="Enter state"
+                          placeholder={t("profile.form.statePlaceholder")}
                         />
                         {buyerForm.formState.errors.state && (
                           <p className="text-sm text-destructive mt-1">
@@ -502,20 +508,20 @@ export default function ProfileManagement() {
                       </div>
 
                       <div>
-                        <Label htmlFor="buyerVillage">Village</Label>
+                        <Label htmlFor="buyerVillage">{t("profile.form.villageLabel")}</Label>
                         <Input
                           id="buyerVillage"
                           {...buyerForm.register("village")}
-                          placeholder="Enter village"
+                          placeholder={t("profile.form.villagePlaceholder")}
                         />
                       </div>
 
                       <div>
-                        <Label htmlFor="buyerGstNumber">GST Number</Label>
+                        <Label htmlFor="buyerGstNumber">{t("profile.form.gstLabel")}</Label>
                         <Input
                           id="buyerGstNumber"
                           {...buyerForm.register("gstNumber")}
-                          placeholder="Enter GST number"
+                          placeholder={t("profile.form.gstPlaceholder")}
                         />
                       </div>
                     </div>
@@ -523,29 +529,29 @@ export default function ProfileManagement() {
                     {/* Right Column */}
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="businessName">Business Name</Label>
+                        <Label htmlFor="businessName">{t("profile.form.businessNameLabel")}</Label>
                         <Input
                           id="businessName"
                           {...buyerForm.register("businessName")}
-                          placeholder="Enter business name"
+                          placeholder={t("profile.form.businessNamePlaceholder")}
                         />
                       </div>
 
                       <div>
-                        <Label htmlFor="businessType">Business Type</Label>
+                        <Label htmlFor="businessType">{t("profile.form.businessTypeLabel")}</Label>
                         <Controller
                           name="businessType"
                           control={buyerForm.control}
                           render={({ field }) => (
                             <Select value={field.value || ""} onValueChange={field.onChange}>
                               <SelectTrigger id="businessType">
-                                <SelectValue placeholder="Select business type" />
+                                <SelectValue placeholder={t("profile.form.businessTypePlaceholder")} />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="Processor">Processor</SelectItem>
-                                <SelectItem value="Trader">Trader</SelectItem>
-                                <SelectItem value="Consumer">Consumer</SelectItem>
-                                <SelectItem value="Retailer">Retailer</SelectItem>
+                                <SelectItem value="Processor">{t("profile.form.businessTypeProcessor")}</SelectItem>
+                                <SelectItem value="Trader">{t("profile.form.businessTypeTrader")}</SelectItem>
+                                <SelectItem value="Consumer">{t("profile.form.businessTypeConsumer")}</SelectItem>
+                                <SelectItem value="Retailer">{t("profile.form.businessTypeRetailer")}</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
@@ -554,12 +560,12 @@ export default function ProfileManagement() {
 
                       <div>
                         <Label htmlFor="buyerPhoneNumber">
-                          Phone Number <span className="text-destructive">*</span>
+                          {t("profile.form.phoneLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="buyerPhoneNumber"
                           {...buyerForm.register("phoneNumber")}
-                          placeholder="Enter phone number"
+                          placeholder={t("profile.form.phonePlaceholder")}
                         />
                         {buyerForm.formState.errors.phoneNumber && (
                           <p className="text-sm text-destructive mt-1">
@@ -570,12 +576,12 @@ export default function ProfileManagement() {
 
                       <div>
                         <Label htmlFor="buyerDistrict">
-                          District <span className="text-destructive">*</span>
+                          {t("profile.form.districtLabel")} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="buyerDistrict"
                           {...buyerForm.register("district")}
-                          placeholder="Enter district"
+                          placeholder={t("profile.form.districtPlaceholder")}
                         />
                         {buyerForm.formState.errors.district && (
                           <p className="text-sm text-destructive mt-1">
@@ -585,31 +591,31 @@ export default function ProfileManagement() {
                       </div>
 
                       <div>
-                        <Label htmlFor="buyerPincode">Pincode</Label>
+                        <Label htmlFor="buyerPincode">{t("profile.form.pincodeLabel")}</Label>
                         <Input
                           id="buyerPincode"
                           {...buyerForm.register("pincode")}
-                          placeholder="Enter pincode"
+                          placeholder={t("profile.form.pincodePlaceholder")}
                         />
                       </div>
 
                       <div>
-                        <Label htmlFor="buyerPreferredLanguage">Preferred Language</Label>
+                        <Label htmlFor="buyerPreferredLanguage">{t("profile.form.preferredLanguageLabel")}</Label>
                         <Controller
                           name="preferredLanguage"
                           control={buyerForm.control}
                           render={({ field }) => (
                             <Select value={field.value} onValueChange={field.onChange}>
                               <SelectTrigger id="buyerPreferredLanguage">
-                                <SelectValue placeholder="Select language" />
+                                <SelectValue placeholder={t("profile.form.preferredLanguagePlaceholder")} />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="English">English</SelectItem>
-                                <SelectItem value="Hindi">Hindi</SelectItem>
-                                <SelectItem value="Malayalam">Malayalam</SelectItem>
-                                <SelectItem value="Tamil">Tamil</SelectItem>
-                                <SelectItem value="Telugu">Telugu</SelectItem>
-                                <SelectItem value="Kannada">Kannada</SelectItem>
+                                <SelectItem value="English">{t("profile.form.languageOptionEnglish")}</SelectItem>
+                                <SelectItem value="Hindi">{t("profile.form.languageOptionHindi")}</SelectItem>
+                                <SelectItem value="Malayalam">{t("profile.form.languageOptionMalayalam")}</SelectItem>
+                                <SelectItem value="Tamil">{t("profile.form.languageOptionTamil")}</SelectItem>
+                                <SelectItem value="Telugu">{t("profile.form.languageOptionTelugu")}</SelectItem>
+                                <SelectItem value="Kannada">{t("profile.form.languageOptionKannada")}</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
@@ -627,12 +633,12 @@ export default function ProfileManagement() {
                       {isLoading ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Saving...
+                          {t("profile.form.saving")}
                         </>
                       ) : (
                         <>
                           <Save className="w-4 h-4 mr-2" />
-                          Save Buyer Profile
+                          {t("profile.form.saveBuyer")}
                         </>
                       )}
                     </Button>
@@ -646,4 +652,3 @@ export default function ProfileManagement() {
     </div>
   );
 }
-

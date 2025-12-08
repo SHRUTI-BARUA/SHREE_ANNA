@@ -1,5 +1,4 @@
 import { Languages, LogOut, Menu, User } from "lucide-react";
-import { useState } from "react";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -22,27 +21,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslation } from "react-i18next";
 
 const navigationItems = [
-  { title: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { title: "Marketplace", icon: ShoppingBag, path: "/marketplace" },
-  { title: "My Products", icon: Package, path: "/myproducts" },
-  { title: "My Orders", icon: ShoppingCart, path: "/myorders" },
-  { title: "Quality Certificates", icon: Award, path: "/quality-certificates" },
-  { title: "Market Insights", icon: TrendingUp, path: "/market-insights" },
-  { title: "Millet Info", icon: Wheat, path: "/millet-info" },
-  { title: "Traceability", icon: ShieldCheck, path: "/traceability" },
-  { title: "Branding", icon: Sparkles, path: "/branding" },
-  { title: "Govt Schemes", icon: Landmark, path: "/govt-schemes" },
+  { titleKey: "nav.dashboard", icon: LayoutDashboard, path: "/" },
+  { titleKey: "nav.marketplace", icon: ShoppingBag, path: "/marketplace" },
+  { titleKey: "nav.myProducts", icon: Package, path: "/myproducts" },
+  { titleKey: "nav.myOrders", icon: ShoppingCart, path: "/myorders" },
+  { titleKey: "nav.qualityCertificates", icon: Award, path: "/quality-certificates" },
+  { titleKey: "nav.marketInsights", icon: TrendingUp, path: "/market-insights" },
+  { titleKey: "nav.milletInfo", icon: Wheat, path: "/millet-info" },
+  { titleKey: "nav.traceability", icon: ShieldCheck, path: "/traceability" },
+  { titleKey: "nav.branding", icon: Sparkles, path: "/branding" },
+  { titleKey: "nav.govtSchemes", icon: Landmark, path: "/govt-schemes" },
 ];
 
 export function AppSidebar() {
-  const [language, setLanguage] = useState<"en" | "hi">("en");
   const { user, signOut } = useAuthStore();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const currentLanguage = i18n.language === "hi" ? "hi" : "en";
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "hi" : "en"));
+    const nextLanguage = currentLanguage === "en" ? "hi" : "en";
+    i18n.changeLanguage(nextLanguage);
   };
 
   const handleLogout = async () => {
@@ -95,7 +97,7 @@ export function AppSidebar() {
       {/* Navigation Section (Scrollable) */}
       <div className="flex-1 overflow-y-auto py-4">
         <p className="px-4 text-xs font-semibold text-muted-foreground mb-2 tracking-wider">
-          NAVIGATION
+          {t("navigation")}
         </p>
         <div className="space-y-1">
           {navigationItems.map((item) => (
@@ -111,7 +113,7 @@ export function AppSidebar() {
               }
             >
               <item.icon className="w-4 h-4" />
-              <span>{item.title}</span>
+              <span>{t(item.titleKey)}</span>
             </NavLink>
           ))}
         </div>
@@ -124,7 +126,9 @@ export function AppSidebar() {
           className="flex items-center gap-2 px-3 py-1.5 border border-sidebar-border text-sidebar-foreground text-xs rounded-full hover:bg-white transition shadow-sm"
         >
           <Languages className="w-3 h-3 text-brand-orange" />
-          <span className="font-medium">{language === "en" ? "हिंदी में बदलें" : "Switch to English"}</span>
+          <span className="font-medium">
+            {currentLanguage === "en" ? t("language.switchToHindi") : t("language.switchToEnglish")}
+          </span>
         </button>
       </div>
 
@@ -155,12 +159,12 @@ export function AppSidebar() {
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={() => navigate("/profile")}>
                 <User className="mr-2 h-4 w-4" />
-                Profile
+                {t("nav.profile")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
+                {t("nav.signOut")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
